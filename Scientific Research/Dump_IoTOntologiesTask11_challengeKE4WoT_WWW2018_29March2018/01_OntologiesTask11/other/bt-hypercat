@@ -1,0 +1,425 @@
+<?xml version="1.0"?>
+
+
+<!DOCTYPE rdf:RDF [
+    <!ENTITY owl "http://www.w3.org/2002/07/owl#" >
+    <!ENTITY xsd "http://www.w3.org/2001/XMLSchema#" >
+    <!ENTITY rdfs "http://www.w3.org/2000/01/rdf-schema#" >
+    <!ENTITY rdf "http://www.w3.org/1999/02/22-rdf-syntax-ns#" >
+    <!ENTITY bt-hypercat "http://portal.bt-hypercat.com/ontologies/bt-hypercat#" >
+]>
+
+
+<rdf:RDF xmlns="http://portal.bt-hypercat.com/ontologies/bt-hypercat#"
+     xml:base="http://portal.bt-hypercat.com/ontologies/bt-hypercat"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+     xmlns:bt-hypercat="http://portal.bt-hypercat.com/ontologies/bt-hypercat#">
+    <owl:Ontology rdf:about="http://portal.bt-hypercat.com/ontologies/bt-hypercat"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Object Properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://portal.bt-hypercat.com/ontologies/bt-hypercat#belongsToEventFeed -->
+
+    <owl:ObjectProperty rdf:about="&bt-hypercat;belongsToEventFeed">
+        <rdfs:range rdf:resource="&bt-hypercat;EventFeed"/>
+        <rdfs:domain rdf:resource="&bt-hypercat;EventStream"/>
+        <owl:inverseOf rdf:resource="&bt-hypercat;hasEventStream"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://portal.bt-hypercat.com/ontologies/bt-hypercat#belongsToSensorFeed -->
+
+    <owl:ObjectProperty rdf:about="&bt-hypercat;belongsToSensorFeed">
+        <rdfs:range rdf:resource="&bt-hypercat;SensorFeed"/>
+        <rdfs:domain rdf:resource="&bt-hypercat;SensorStream"/>
+        <owl:inverseOf rdf:resource="&bt-hypercat;hasSensorStream"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://portal.bt-hypercat.com/ontologies/bt-hypercat#hasEventStream -->
+
+    <owl:ObjectProperty rdf:about="&bt-hypercat;hasEventStream">
+        <rdfs:domain rdf:resource="&bt-hypercat;EventFeed"/>
+        <rdfs:range rdf:resource="&bt-hypercat;EventStream"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://portal.bt-hypercat.com/ontologies/bt-hypercat#hasSensorStream -->
+
+    <owl:ObjectProperty rdf:about="&bt-hypercat;hasSensorStream">
+        <rdfs:domain rdf:resource="&bt-hypercat;SensorFeed"/>
+        <rdfs:range rdf:resource="&bt-hypercat;SensorStream"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Data properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://portal.bt-hypercat.com/ontologies/bt-hypercat#datastream_current_time -->
+
+    <owl:DatatypeProperty rdf:about="&bt-hypercat;datastream_current_time">
+        <rdfs:domain rdf:resource="&bt-hypercat;Datastream"/>
+        <rdfs:range rdf:resource="&xsd;dateTime"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://portal.bt-hypercat.com/ontologies/bt-hypercat#datastream_current_value -->
+
+    <owl:DatatypeProperty rdf:about="&bt-hypercat;datastream_current_value">
+        <rdfs:domain rdf:resource="&bt-hypercat;Datastream"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://portal.bt-hypercat.com/ontologies/bt-hypercat#datastream_id -->
+
+    <owl:DatatypeProperty rdf:about="&bt-hypercat;datastream_id">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="&bt-hypercat;Datastream"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://portal.bt-hypercat.com/ontologies/bt-hypercat#datastream_max_value -->
+
+    <owl:DatatypeProperty rdf:about="&bt-hypercat;datastream_max_value">
+        <rdfs:domain rdf:resource="&bt-hypercat;SensorStream"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://portal.bt-hypercat.com/ontologies/bt-hypercat#datastream_min_value -->
+
+    <owl:DatatypeProperty rdf:about="&bt-hypercat;datastream_min_value">
+        <rdfs:domain rdf:resource="&bt-hypercat;SensorStream"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://portal.bt-hypercat.com/ontologies/bt-hypercat#datastream_tag -->
+
+    <owl:DatatypeProperty rdf:about="&bt-hypercat;datastream_tag">
+        <rdfs:domain rdf:resource="&bt-hypercat;Datastream"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://portal.bt-hypercat.com/ontologies/bt-hypercat#datastream_unit_symbol -->
+
+    <owl:DatatypeProperty rdf:about="&bt-hypercat;datastream_unit_symbol">
+        <rdfs:domain rdf:resource="&bt-hypercat;SensorStream"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://portal.bt-hypercat.com/ontologies/bt-hypercat#datastream_unit_text -->
+
+    <owl:DatatypeProperty rdf:about="&bt-hypercat;datastream_unit_text">
+        <rdfs:domain rdf:resource="&bt-hypercat;SensorStream"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://portal.bt-hypercat.com/ontologies/bt-hypercat#datastream_unit_type -->
+
+    <owl:DatatypeProperty rdf:about="&bt-hypercat;datastream_unit_type">
+        <rdfs:domain rdf:resource="&bt-hypercat;SensorStream"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://portal.bt-hypercat.com/ontologies/bt-hypercat#feed_creator -->
+
+    <owl:DatatypeProperty rdf:about="&bt-hypercat;feed_creator">
+        <rdfs:domain rdf:resource="&bt-hypercat;Feed"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://portal.bt-hypercat.com/ontologies/bt-hypercat#feed_description -->
+
+    <owl:DatatypeProperty rdf:about="&bt-hypercat;feed_description">
+        <rdfs:domain rdf:resource="&bt-hypercat;Feed"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://portal.bt-hypercat.com/ontologies/bt-hypercat#feed_disposition -->
+
+    <owl:DatatypeProperty rdf:about="&bt-hypercat;feed_disposition">
+        <rdfs:domain rdf:resource="&bt-hypercat;Feed"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://portal.bt-hypercat.com/ontologies/bt-hypercat#feed_domain -->
+
+    <owl:DatatypeProperty rdf:about="&bt-hypercat;feed_domain">
+        <rdfs:domain rdf:resource="&bt-hypercat;Feed"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://portal.bt-hypercat.com/ontologies/bt-hypercat#feed_ele -->
+
+    <owl:DatatypeProperty rdf:about="&bt-hypercat;feed_ele">
+        <owl:deprecated>Replaced by &quot;http://www.w3.org/2003/01/geo/wgs84_pos#alt&quot;</owl:deprecated>
+        <rdfs:domain rdf:resource="&bt-hypercat;Feed"/>
+        <rdfs:range rdf:resource="&xsd;double"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://portal.bt-hypercat.com/ontologies/bt-hypercat#feed_email -->
+
+    <owl:DatatypeProperty rdf:about="&bt-hypercat;feed_email">
+        <rdfs:domain rdf:resource="&bt-hypercat;Feed"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://portal.bt-hypercat.com/ontologies/bt-hypercat#feed_exposure -->
+
+    <owl:DatatypeProperty rdf:about="&bt-hypercat;feed_exposure">
+        <rdfs:domain rdf:resource="&bt-hypercat;Feed"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://portal.bt-hypercat.com/ontologies/bt-hypercat#feed_icon -->
+
+    <owl:DatatypeProperty rdf:about="&bt-hypercat;feed_icon">
+        <rdfs:domain rdf:resource="&bt-hypercat;Feed"/>
+        <rdfs:range rdf:resource="&xsd;anyURI"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://portal.bt-hypercat.com/ontologies/bt-hypercat#feed_id -->
+
+    <owl:DatatypeProperty rdf:about="&bt-hypercat;feed_id">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="&bt-hypercat;Feed"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://portal.bt-hypercat.com/ontologies/bt-hypercat#feed_lat -->
+
+    <owl:DatatypeProperty rdf:about="&bt-hypercat;feed_lat">
+        <owl:deprecated>Replaced by &quot;http://www.w3.org/2003/01/geo/wgs84_pos#lat&quot;</owl:deprecated>
+        <rdfs:domain rdf:resource="&bt-hypercat;Feed"/>
+        <rdfs:range rdf:resource="&xsd;double"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://portal.bt-hypercat.com/ontologies/bt-hypercat#feed_location_name -->
+
+    <owl:DatatypeProperty rdf:about="&bt-hypercat;feed_location_name">
+        <rdfs:domain rdf:resource="&bt-hypercat;Feed"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://portal.bt-hypercat.com/ontologies/bt-hypercat#feed_lon -->
+
+    <owl:DatatypeProperty rdf:about="&bt-hypercat;feed_lon">
+        <owl:deprecated>Replaced by &quot;http://www.w3.org/2003/01/geo/wgs84_pos#long&quot;</owl:deprecated>
+        <rdfs:domain rdf:resource="&bt-hypercat;Feed"/>
+        <rdfs:range rdf:resource="&xsd;double"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://portal.bt-hypercat.com/ontologies/bt-hypercat#feed_private -->
+
+    <owl:DatatypeProperty rdf:about="&bt-hypercat;feed_private">
+        <rdfs:domain rdf:resource="&bt-hypercat;Feed"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://portal.bt-hypercat.com/ontologies/bt-hypercat#feed_status -->
+
+    <owl:DatatypeProperty rdf:about="&bt-hypercat;feed_status">
+        <rdfs:domain rdf:resource="&bt-hypercat;Feed"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://portal.bt-hypercat.com/ontologies/bt-hypercat#feed_tag -->
+
+    <owl:DatatypeProperty rdf:about="&bt-hypercat;feed_tag">
+        <rdfs:domain rdf:resource="&bt-hypercat;Feed"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://portal.bt-hypercat.com/ontologies/bt-hypercat#feed_the_geom -->
+
+    <owl:DatatypeProperty rdf:about="&bt-hypercat;feed_the_geom">
+        <rdfs:domain rdf:resource="&bt-hypercat;Feed"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://portal.bt-hypercat.com/ontologies/bt-hypercat#feed_title -->
+
+    <owl:DatatypeProperty rdf:about="&bt-hypercat;feed_title">
+        <rdfs:domain rdf:resource="&bt-hypercat;Feed"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://portal.bt-hypercat.com/ontologies/bt-hypercat#feed_updated -->
+
+    <owl:DatatypeProperty rdf:about="&bt-hypercat;feed_updated">
+        <rdfs:domain rdf:resource="&bt-hypercat;Feed"/>
+        <rdfs:range rdf:resource="&xsd;dateTime"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://portal.bt-hypercat.com/ontologies/bt-hypercat#feed_url -->
+
+    <owl:DatatypeProperty rdf:about="&bt-hypercat;feed_url">
+        <rdfs:domain rdf:resource="&bt-hypercat;Feed"/>
+        <rdfs:range rdf:resource="&xsd;anyURI"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://portal.bt-hypercat.com/ontologies/bt-hypercat#feed_website -->
+
+    <owl:DatatypeProperty rdf:about="&bt-hypercat;feed_website">
+        <rdfs:domain rdf:resource="&bt-hypercat;Feed"/>
+        <rdfs:range rdf:resource="&xsd;anyURI"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Classes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://portal.bt-hypercat.com/ontologies/bt-hypercat#Datastream -->
+
+    <owl:Class rdf:about="&bt-hypercat;Datastream">
+        <rdfs:subClassOf rdf:resource="http://portal.bt-hypercat.com/ontologies/hypercat#Item"/>
+    </owl:Class>
+    
+
+
+    <!-- http://portal.bt-hypercat.com/ontologies/bt-hypercat#EventFeed -->
+
+    <owl:Class rdf:about="&bt-hypercat;EventFeed">
+        <rdfs:subClassOf rdf:resource="&bt-hypercat;Feed"/>
+    </owl:Class>
+    
+
+
+    <!-- http://portal.bt-hypercat.com/ontologies/bt-hypercat#EventStream -->
+
+    <owl:Class rdf:about="&bt-hypercat;EventStream">
+        <rdfs:subClassOf rdf:resource="&bt-hypercat;Datastream"/>
+    </owl:Class>
+    
+
+
+    <!-- http://portal.bt-hypercat.com/ontologies/bt-hypercat#Feed -->
+
+    <owl:Class rdf:about="&bt-hypercat;Feed">
+        <rdfs:subClassOf rdf:resource="http://portal.bt-hypercat.com/ontologies/hypercat#Item"/>
+    </owl:Class>
+    
+
+
+    <!-- http://portal.bt-hypercat.com/ontologies/bt-hypercat#LocationFeed -->
+
+    <owl:Class rdf:about="&bt-hypercat;LocationFeed">
+        <rdfs:subClassOf rdf:resource="&bt-hypercat;Feed"/>
+    </owl:Class>
+    
+
+
+    <!-- http://portal.bt-hypercat.com/ontologies/bt-hypercat#SensorFeed -->
+
+    <owl:Class rdf:about="&bt-hypercat;SensorFeed">
+        <rdfs:subClassOf rdf:resource="&bt-hypercat;Feed"/>
+    </owl:Class>
+    
+
+
+    <!-- http://portal.bt-hypercat.com/ontologies/bt-hypercat#SensorStream -->
+
+    <owl:Class rdf:about="&bt-hypercat;SensorStream">
+        <rdfs:subClassOf rdf:resource="&bt-hypercat;Datastream"/>
+    </owl:Class>
+    
+
+
+    <!-- http://portal.bt-hypercat.com/ontologies/hypercat#Item -->
+
+    <owl:Class rdf:about="http://portal.bt-hypercat.com/ontologies/hypercat#Item"/>
+</rdf:RDF>
+
+
+
+<!-- Generated by the OWL API (version 3.5.1) http://owlapi.sourceforge.net -->
+
