@@ -1,0 +1,460 @@
+<?xml version="1.0"?>
+
+
+<!DOCTYPE rdf:RDF [
+    <!ENTITY san "http://dii/IoT/san#" >
+    <!ENTITY owl "http://www.w3.org/2002/07/owl#" >
+    <!ENTITY dc "http://purl.org/dc/elements/1.1/" >
+    <!ENTITY xsd "http://www.w3.org/2001/XMLSchema#" >
+    <!ENTITY ssn "http://purl.oclc.org/NET/ssnx/ssn#" >
+    <!ENTITY rdfs "http://www.w3.org/2000/01/rdf-schema#" >
+    <!ENTITY dul "http://www.loa-cnr.it/ontologies/DUL.owl#" >
+    <!ENTITY rdf "http://www.w3.org/1999/02/22-rdf-syntax-ns#" >
+]>
+
+
+<rdf:RDF xmlns="http://www.w3.org/2002/07/owl#"
+     xml:base="http://www.w3.org/2002/07/owl"
+     xmlns:dc="http://purl.org/dc/elements/1.1/"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+     xmlns:san="http://dii/IoT/san#"
+     xmlns:dul="http://www.loa-cnr.it/ontologies/DUL.owl#"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:ssn="http://purl.oclc.org/NET/ssnx/ssn#"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+    <Ontology rdf:about="https://dl.dropboxusercontent.com/u/39840858/ontologie/san">
+        <dc:title>Semantic Actuator Network Ontology</dc:title>
+        <rdfs:comment xml:lang="en">This ontology describes actuators and operations, and related concepts. It extends the Semantic Sensor Network ontology developed by the W3C SSN Incubator Group. Similarly to the SSN ontology, this ontology does not describe domain concepts, time, locations, etc. these are intended to be included from other ontologies via OWL imports.</rdfs:comment>
+        <imports rdf:resource="http://purl.oclc.org/NET/ssnx/ssn"/>
+    </Ontology>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Object Properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://dii/IoT/san#actingMethodUsed -->
+
+    <ObjectProperty rdf:about="&san;actingMethodUsed">
+        <rdfs:label xml:lang="en">acting method used</rdfs:label>
+        <rdfs:comment xml:lang="en">A control procedure is a detailed description of a control according to one or more control principles and to a given control method, based on a control model and including any calculation to obtain desired result</rdfs:comment>
+        <rdfs:subPropertyOf rdf:resource="&dul;satisfies"/>
+    </ObjectProperty>
+    
+
+
+    <!-- http://dii/IoT/san#controlledProperty -->
+
+    <ObjectProperty rdf:about="&san;controlledProperty">
+        <rdfs:label xml:lang="en">controlled property</rdfs:label>
+        <rdfs:comment xml:lang="en">Relation linking an Operation to the Property that was controlled.  The controlledProperty should be a Property (hasProperty) of the FeatureOfInterest (linked by featureOfInterest) of this operation.</rdfs:comment>
+        <rdfs:subPropertyOf rdf:resource="&dul;isSettingFor"/>
+    </ObjectProperty>
+    
+
+
+    <!-- http://dii/IoT/san#hasChangeCapability -->
+
+    <ObjectProperty rdf:about="&san;hasChangeCapability">
+        <rdfs:label xml:lang="en">has change capability</rdfs:label>
+        <rdfs:comment xml:lang="en">Relation from an Actuator to a ChangeCapability describing the properties of the actuator.</rdfs:comment>
+        <rdfs:subPropertyOf rdf:resource="&ssn;hasProperty"/>
+    </ObjectProperty>
+    
+
+
+    <!-- http://dii/IoT/san#hasChangeProperty -->
+
+    <ObjectProperty rdf:about="&san;hasChangeProperty">
+        <rdfs:label xml:lang="en">has change property</rdfs:label>
+        <rdfs:comment xml:lang="en">Relation from a ChangeCapability to a ChangeProperty.  For example, to an accuracy (see notes at ChangeCapability).</rdfs:comment>
+        <rdfs:subPropertyOf rdf:resource="&ssn;hasProperty"/>
+    </ObjectProperty>
+    
+
+
+    <!-- http://dii/IoT/san#isRequiredBy -->
+
+    <ObjectProperty rdf:about="&san;isRequiredBy">
+        <rdfs:label xml:lang="en">is required by</rdfs:label>
+        <rdfs:comment xml:lang="en">Relation between an actuator and the required input.</rdfs:comment>
+    </ObjectProperty>
+    
+
+
+    <!-- http://dii/IoT/san#madeOperation -->
+
+    <ObjectProperty rdf:about="&san;madeOperation">
+        <rdfs:label xml:lang="en">made operation</rdfs:label>
+        <rdfs:comment xml:lang="en">Relation between an Actuator and Operation it has made.</rdfs:comment>
+        <rdfs:subPropertyOf rdf:resource="&dul;isObjectIncludedIn"/>
+    </ObjectProperty>
+    
+
+
+    <!-- http://dii/IoT/san#models -->
+
+    <ObjectProperty rdf:about="&san;models">
+        <rdfs:comment xml:lang="en">A relation from an actuator to the Stimulus that the actuator can control.   
+The Stimulus itself will be serving as a proxy for (see isProxyOf) some editable property.</rdfs:comment>
+    </ObjectProperty>
+    
+
+
+    <!-- http://dii/IoT/san#modify -->
+
+    <ObjectProperty rdf:about="&san;modify">
+        <rdfs:comment xml:lang="en">Relation between a Actuator and a Property that the actuator can change.</rdfs:comment>
+        <propertyChainAxiom rdf:parseType="Collection">
+            <rdf:Description rdf:about="&san;madeOperation"/>
+            <rdf:Description rdf:about="&san;controlledProperty"/>
+        </propertyChainAxiom>
+        <propertyChainAxiom rdf:parseType="Collection">
+            <rdf:Description rdf:about="&san;hasChangeCapability"/>
+            <rdf:Description rdf:about="&ssn;forProperty"/>
+        </propertyChainAxiom>
+    </ObjectProperty>
+    
+
+
+    <!-- http://dii/IoT/san#operatedBy -->
+
+    <ObjectProperty rdf:about="&san;operatedBy">
+        <inverseOf rdf:resource="&san;madeOperation"/>
+        <rdfs:subPropertyOf rdf:resource="&dul;includesObject"/>
+    </ObjectProperty>
+    
+
+
+    <!-- http://dii/IoT/san#operationDesiredResult -->
+
+    <ObjectProperty rdf:about="&san;operationDesiredResult">
+        <rdfs:label xml:lang="en">operation desired result</rdfs:label>
+        <rdfs:comment xml:lang="en">Relation linking an Operation (i.e., a description of the context, the Situation, in which the operation was made) and a desired result, which contains a value representing the value associated with the controlled Property.</rdfs:comment>
+        <rdfs:subPropertyOf rdf:resource="&dul;isSettingFor"/>
+    </ObjectProperty>
+    
+
+
+    <!-- http://dii/IoT/san#operationDesiredResultTime -->
+
+    <ObjectProperty rdf:about="&san;operationDesiredResultTime">
+        <rdfs:label xml:lang="en">operation desired result time</rdfs:label>
+        <rdfs:comment xml:lang="en">The result time is the time when the procedure associated with the operation act was applied.</rdfs:comment>
+        <rdfs:subPropertyOf rdf:resource="&dul;hasRegion"/>
+    </ObjectProperty>
+    
+
+
+    <!-- http://dii/IoT/san#operationSamplingTime -->
+
+    <ObjectProperty rdf:about="&san;operationSamplingTime">
+        <rdfs:label xml:lang="en">operation sampling time</rdfs:label>
+        <rdfs:comment xml:lang="en">The sampling time is the time that the desired result applies to the feature-of-interest. This is the time usually required for geospatial analysis of the result.</rdfs:comment>
+        <rdfs:subPropertyOf rdf:resource="&dul;hasRegion"/>
+    </ObjectProperty>
+    
+
+
+    <!-- http://dii/IoT/san#qualityOfOperation -->
+
+    <ObjectProperty rdf:about="&san;qualityOfOperation">
+        <rdfs:label xml:lang="en">quality of operation</rdfs:label>
+        <rdfs:comment xml:lang="en">Relation linking an Operation to the adjudged quality of the result.  This is of course complimentary to the ChangeCapability information recorded for the Actuator that made the Operation.</rdfs:comment>
+        <rdfs:subPropertyOf rdf:resource="&ssn;hasProperty"/>
+    </ObjectProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Data properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://dii/IoT/san#hasLatitude -->
+
+    <DatatypeProperty rdf:about="&san;hasLatitude">
+        <rdfs:subPropertyOf rdf:resource="&dul;hasDataValue"/>
+    </DatatypeProperty>
+    
+
+
+    <!-- http://dii/IoT/san#hasLongitude -->
+
+    <DatatypeProperty rdf:about="&san;hasLongitude">
+        <rdfs:subPropertyOf rdf:resource="&dul;hasDataValue"/>
+    </DatatypeProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Classes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://dii/IoT/san#Acting -->
+
+    <Class rdf:about="&san;Acting">
+        <rdfs:label xml:lang="en">Acting</rdfs:label>
+        <rdfs:subClassOf rdf:resource="&ssn;Process"/>
+        <rdfs:comment>Acting is a process that results in the modification or control of the value of a phenomenon.</rdfs:comment>
+    </Class>
+    
+
+
+    <!-- http://dii/IoT/san#ActingDevice -->
+
+    <Class rdf:about="&san;ActingDevice">
+        <rdfs:label xml:lang="en">Acting Device</rdfs:label>
+        <rdfs:subClassOf rdf:resource="&san;Actuator"/>
+        <rdfs:subClassOf rdf:resource="&ssn;Device"/>
+        <rdfs:comment xml:lang="en">An acting device is a device that implements acting.</rdfs:comment>
+    </Class>
+    
+
+
+    <!-- http://dii/IoT/san#Actuator -->
+
+    <Class rdf:about="&san;Actuator">
+        <rdfs:label xml:lang="en">Actuator</rdfs:label>
+        <rdfs:subClassOf rdf:resource="&dul;PhysicalObject"/>
+        <rdfs:subClassOf>
+            <Restriction>
+                <onProperty rdf:resource="&san;modify"/>
+                <allValuesFrom rdf:resource="&ssn;Property"/>
+            </Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <Restriction>
+                <onProperty rdf:resource="&ssn;implements"/>
+                <someValuesFrom rdf:resource="&san;Acting"/>
+            </Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <Restriction>
+                <onProperty rdf:resource="&san;models"/>
+                <allValuesFrom rdf:resource="&ssn;Stimulus"/>
+            </Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <Restriction>
+                <onProperty rdf:resource="&san;hasChangeCapability"/>
+                <allValuesFrom rdf:resource="&san;ChangeCapability"/>
+            </Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment xml:lang="en">An actuator can do (implements) acting: an actuator is any entity that can follow an acting method and thus control some Property of a FeatureOfInterest. Actuator may be physical device or any other thing can follow an Acting Method to control a Property</rdfs:comment>
+    </Class>
+    
+
+
+    <!-- http://dii/IoT/san#ActuatorInput -->
+
+    <Class rdf:about="&san;ActuatorInput">
+        <rdfs:label xml:lang="en">Actuator Input</rdfs:label>
+        <rdfs:subClassOf rdf:resource="&dul;InformationObject"/>
+        <rdfs:subClassOf>
+            <Restriction>
+                <onProperty rdf:resource="&ssn;hasValue"/>
+                <someValuesFrom rdf:resource="&san;OperationValue"/>
+            </Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <Restriction>
+                <onProperty rdf:resource="&san;isRequiredBy"/>
+                <someValuesFrom rdf:resource="&san;Actuator"/>
+            </Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment xml:lang="en">An actuator requires an information (a value you want to change), the value itself being represented by an OperationValue</rdfs:comment>
+    </Class>
+    
+
+
+    <!-- http://dii/IoT/san#ActuatorOutput -->
+
+    <Class rdf:about="&san;ActuatorOutput">
+        <rdfs:label xml:lang="en">Actuator Output</rdfs:label>
+        <equivalentClass rdf:resource="&ssn;Stimulus"/>
+        <rdfs:subClassOf rdf:resource="&dul;Event"/>
+    </Class>
+    
+
+
+    <!-- http://dii/IoT/san#ChangeCapability -->
+
+    <Class rdf:about="&san;ChangeCapability">
+        <rdfs:label xml:lang="en">Change Capability</rdfs:label>
+        <rdfs:subClassOf rdf:resource="&ssn;Property"/>
+        <rdfs:subClassOf>
+            <Restriction>
+                <onProperty rdf:resource="&ssn;forProperty"/>
+                <allValuesFrom rdf:resource="&ssn;Property"/>
+            </Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <Restriction>
+                <onProperty rdf:resource="&san;hasChangeProperty"/>
+                <allValuesFrom rdf:resource="&san;ChangeProperty"/>
+            </Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <Restriction>
+                <onProperty rdf:resource="&ssn;inCondition"/>
+                <allValuesFrom rdf:resource="&ssn;Condition"/>
+            </Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment xml:lang="en">Collects together operation properties (accuracy, range, precision, etc) and the environmental conditions in which those properties hold, representing a specification of an actuator&apos;s capability in those conditions.
+
+The conditions specified here are those that affect the operation properties, while those in OperatingRange represent the actuator&apos;s standard operating conditions, including conditions that don&apos;t affect the operation.</rdfs:comment>
+    </Class>
+    
+
+
+    <!-- http://dii/IoT/san#ChangeProperty -->
+
+    <Class rdf:about="&san;ChangeProperty">
+        <rdfs:label xml:lang="en">Change Property</rdfs:label>
+        <equivalentClass rdf:resource="&ssn;MeasurementProperty"/>
+        <rdfs:subClassOf rdf:resource="&ssn;Property"/>
+        <rdfs:comment xml:lang="en">An identifiable and observable characteristic of an actuator&apos;s operations or ability to make operations.</rdfs:comment>
+    </Class>
+    
+
+
+    <!-- http://dii/IoT/san#Operation -->
+
+    <Class rdf:about="&san;Operation">
+        <rdfs:label xml:lang="en">Operation</rdfs:label>
+        <rdfs:subClassOf rdf:resource="&dul;Situation"/>
+        <rdfs:subClassOf>
+            <Restriction>
+                <onProperty rdf:resource="&san;operationSamplingTime"/>
+                <minCardinality rdf:datatype="&xsd;nonNegativeInteger">0</minCardinality>
+            </Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <Restriction>
+                <onProperty rdf:resource="&san;operatedBy"/>
+                <onClass rdf:resource="&san;Actuator"/>
+                <qualifiedCardinality rdf:datatype="&xsd;nonNegativeInteger">1</qualifiedCardinality>
+            </Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <Restriction>
+                <onProperty rdf:resource="&ssn;featureOfInterest"/>
+                <onClass rdf:resource="&ssn;FeatureOfInterest"/>
+                <qualifiedCardinality rdf:datatype="&xsd;nonNegativeInteger">1</qualifiedCardinality>
+            </Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <Restriction>
+                <onProperty rdf:resource="&san;controlledProperty"/>
+                <allValuesFrom rdf:resource="&ssn;Property"/>
+            </Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <Restriction>
+                <onProperty rdf:resource="&san;operationDesiredResultTime"/>
+                <minCardinality rdf:datatype="&xsd;nonNegativeInteger">0</minCardinality>
+            </Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <Restriction>
+                <onProperty rdf:resource="&san;actingMethodUsed"/>
+                <allValuesFrom rdf:resource="&san;Acting"/>
+            </Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <Restriction>
+                <onProperty rdf:resource="&san;operationDesiredResult"/>
+                <allValuesFrom rdf:resource="&san;ActuatorInput"/>
+            </Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <Restriction>
+                <onProperty rdf:resource="&san;actingMethodUsed"/>
+                <onClass rdf:resource="&san;Acting"/>
+                <qualifiedCardinality rdf:datatype="&xsd;nonNegativeInteger">1</qualifiedCardinality>
+            </Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <Restriction>
+                <onProperty rdf:resource="&ssn;featureOfInterest"/>
+                <allValuesFrom rdf:resource="&ssn;FeatureOfInterest"/>
+            </Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <Restriction>
+                <onProperty rdf:resource="&san;qualityOfOperation"/>
+                <minCardinality rdf:datatype="&xsd;nonNegativeInteger">0</minCardinality>
+            </Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <Restriction>
+                <onProperty rdf:resource="&san;controlledProperty"/>
+                <onClass rdf:resource="&ssn;Property"/>
+                <qualifiedCardinality rdf:datatype="&xsd;nonNegativeInteger">1</qualifiedCardinality>
+            </Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <Restriction>
+                <onProperty rdf:resource="&dul;includesEvent"/>
+                <someValuesFrom rdf:resource="&ssn;Stimulus"/>
+            </Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <Restriction>
+                <onProperty rdf:resource="&san;operatedBy"/>
+                <allValuesFrom rdf:resource="&san;Actuator"/>
+            </Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment xml:lang="en">An Operation is a Situation in which an Acting method has been used to set or modify a value of a Property of a FeatureOfInterest.  Links to Acting and Actuator describe what made the Operation and how; links to Property and Feature detail what was changed; the desired result is the input of an Actuator; other metadata details times etc.</rdfs:comment>
+    </Class>
+    
+
+
+    <!-- http://dii/IoT/san#OperationValue -->
+
+    <Class rdf:about="&san;OperationValue">
+        <rdfs:label xml:lang="en">Operation Value</rdfs:label>
+        <rdfs:subClassOf rdf:resource="&dul;Region"/>
+        <rdfs:comment xml:lang="en">The value you want to change or set trough an Operation. An Operation requires a desired result which is the input for some actuator, the desired result is an information object that encodes some value for a Feature.</rdfs:comment>
+    </Class>
+    
+
+
+    <!-- http://purl.oclc.org/NET/ssnx/ssn#MeasurementProperty -->
+
+    <rdf:Description rdf:about="&ssn;MeasurementProperty"/>
+    
+
+
+    <!-- http://purl.oclc.org/NET/ssnx/ssn#Stimulus -->
+
+    <rdf:Description rdf:about="&ssn;Stimulus"/>
+</rdf:RDF>
+
+
+
+<!-- Generated by the OWL API (version 3.4.2) http://owlapi.sourceforge.net -->
+

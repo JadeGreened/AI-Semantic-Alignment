@@ -1,0 +1,283 @@
+<?xml version="1.0"?>
+<rdf:RDF xmlns="http://ecareathome-ontology.mpi.aass.oru.se/SmartHome.owl#"
+     xml:base="http://ecareathome-ontology.mpi.aass.oru.se/SmartHome.owl"
+     xmlns:smarthome_place="http://ecareathome-ontology.mpi.aass.oru.se/patterns/SmartHome_Place.owl#"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:ns="http://creativecommons.org/ns#"
+     xmlns:smarthome_featureofinterest="http://ecareathome-ontology.mpi.aass.oru.se/patterns/SmartHome_FeatureOfInterest.owl#"
+     xmlns:cpannotationschema="http://www.ontologydesignpatterns.org/schemas/cpannotationschema.owl#"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:smarthome_object="http://ecareathome-ontology.mpi.aass.oru.se/patterns/SmartHome_Object.owl#"
+     xmlns:smarthome_situation="http://ecareathome-ontology.mpi.aass.oru.se/patterns/SmartHome_Situation.owl#"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+     xmlns:smarthome_network="http://ecareathome-ontology.mpi.aass.oru.se/patterns/SmartHome_Network.owl#"
+     xmlns:smarthome_property="http://ecareathome-ontology.mpi.aass.oru.se/patterns/SmartHome_Property.owl#"
+     xmlns:ssn="http://purl.oclc.org/NET/ssnx/ssn#"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:terms="http://purl.org/dc/terms/"
+     xmlns:xml="http://www.w3.org/XML/1998/namespace"
+     xmlns:smarthome_sensing="http://ecareathome-ontology.mpi.aass.oru.se/patterns/SmartHome_Sensing.owl#"
+     xmlns:smarthome_geometry="http://ecareathome-ontology.mpi.aass.oru.se/patterns/SmartHome_Geometry.owl#"
+     xmlns:smarthome_timeinterval="http://ecareathome-ontology.mpi.aass.oru.se/patterns/SmartHome_TimeInterval.owl#"
+     xmlns:dul="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#"
+     xmlns:smarthome="http://ecareathome-ontology.mpi.aass.oru.se/SmartHome.owl#"
+     xmlns:smarthome_event="http://ecareathome-ontology.mpi.aass.oru.se/patterns/SmartHome_Event.owl#"
+     xmlns:dc="http://purl.org/dc/elements/1.1/">
+    <owl:Ontology rdf:about="http://ecareathome-ontology.mpi.aass.oru.se/SmartHome.owl">
+        <owl:imports rdf:resource="http://ecareathome-ontology.mpi.aass.oru.se/patterns/SmartHome_TimeInterval.owl"/>
+        <owl:imports rdf:resource="http://ecareathome-ontology.mpi.aass.oru.se/patterns/SmartHome_Geometry.owl"/>
+        <owl:imports rdf:resource="http://ecareathome-ontology.mpi.aass.oru.se/patterns/SmartHome_Situation.owl"/>
+        <owl:imports rdf:resource="http://ecareathome-ontology.mpi.aass.oru.se/patterns/SmartHome_Place.owl"/>
+        <owl:imports rdf:resource="http://ecareathome-ontology.mpi.aass.oru.se/patterns/SmartHome_Event.owl"/>
+        <owl:imports rdf:resource="http://ecareathome-ontology.mpi.aass.oru.se/patterns/SmartHome_Network.owl"/>
+        <owl:imports rdf:resource="http://ecareathome-ontology.mpi.aass.oru.se/patterns/SmartHome_FeatureOfInterest.owl"/>
+        <owl:imports rdf:resource="http://ecareathome-ontology.mpi.aass.oru.se/patterns/SmartHome_Object.owl"/>
+        <owl:imports rdf:resource="http://ecareathome-ontology.mpi.aass.oru.se/patterns/ssn.owl"/>
+        <owl:imports rdf:resource="http://ecareathome-ontology.mpi.aass.oru.se/patterns/SmartHome_Sensing.owl"/>
+        <cpannotationschema:hasIntent rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The SmartHome ontology is formed as the result of importing 10 ODPs listed in the following in order to represent different aspects of a smart home environment:
+http://ontologydesignpatterns.org/wiki/Submissions:SmartHome_TimeInterval
+http://ontologydesignpatterns.org/wiki/Submissions:SmartHome_Geometry
+http://ontologydesignpatterns.org/wiki/Submissions:SmartHome_Property
+http://ontologydesignpatterns.org/wiki/Submissions:SmartHome_FeatureOfInterest
+http://ontologydesignpatterns.org/wiki/Submissions:SmartHome_Situation
+http://ontologydesignpatterns.org/wiki/Submissions:SmartHome_Sensing
+http://ontologydesignpatterns.org/wiki/Submissions:SmartHome_Place
+http://ontologydesignpatterns.org/wiki/Submissions:SmartHome_Object
+http://ontologydesignpatterns.org/wiki/Submissions:SmartHome_Network
+http://ontologydesignpatterns.org/wiki/Submissions:SmartHome_Event
+The connection between each pair of modules is accomplished by specializing at least one of the concepts’ definition.</cpannotationschema:hasIntent>
+    </owl:Ontology>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Data properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://ecareathome-ontology.mpi.aass.oru.se/SmartHome.owl#hasBasicType -->
+
+    <owl:DatatypeProperty rdf:about="http://ecareathome-ontology.mpi.aass.oru.se/SmartHome.owl#hasBasicType">
+        <rdfs:subPropertyOf rdf:resource="http://www.w3.org/2002/07/owl#topDataProperty"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://ecareathome-ontology.mpi.aass.oru.se/SmartHome.owl#hasDBKey -->
+
+    <owl:DatatypeProperty rdf:about="http://ecareathome-ontology.mpi.aass.oru.se/SmartHome.owl#hasDBKey">
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#int"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Classes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://ecareathome-ontology.mpi.aass.oru.se/patterns/SmartHome_Event.owl#EventCondition -->
+
+    <rdf:Description rdf:about="http://ecareathome-ontology.mpi.aass.oru.se/patterns/SmartHome_Event.owl#EventCondition">
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#isObservableAt"/>
+                <owl:someValuesFrom rdf:resource="http://ecareathome-ontology.mpi.aass.oru.se/patterns/SmartHome_TimeInterval.owl#SmartHomeTemporalDistance"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#isSettingFor"/>
+                <owl:someValuesFrom rdf:resource="http://ecareathome-ontology.mpi.aass.oru.se/patterns/SmartHome_Situation.owl#SmartObjectSituation"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </rdf:Description>
+    
+
+
+    <!-- http://ecareathome-ontology.mpi.aass.oru.se/patterns/SmartHome_Event.owl#Manifestation -->
+
+    <rdf:Description rdf:about="http://ecareathome-ontology.mpi.aass.oru.se/patterns/SmartHome_Event.owl#Manifestation">
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#isEventIncludedIn"/>
+                <owl:someValuesFrom rdf:resource="http://ecareathome-ontology.mpi.aass.oru.se/patterns/SmartHome_Situation.owl#SmartObjectSituation"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </rdf:Description>
+    
+
+
+    <!-- http://ecareathome-ontology.mpi.aass.oru.se/patterns/SmartHome_Event.owl#SmartHomeEvent -->
+
+    <rdf:Description rdf:about="http://ecareathome-ontology.mpi.aass.oru.se/patterns/SmartHome_Event.owl#SmartHomeEvent">
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#hasParticipant"/>
+                <owl:someValuesFrom rdf:resource="http://ecareathome-ontology.mpi.aass.oru.se/patterns/SmartHome_Object.owl#SmartHomeAgent"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#isObservableAt"/>
+                <owl:someValuesFrom rdf:resource="http://ecareathome-ontology.mpi.aass.oru.se/patterns/SmartHome_TimeInterval.owl#SmartHomeTimeInterval"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </rdf:Description>
+    
+
+
+    <!-- http://ecareathome-ontology.mpi.aass.oru.se/patterns/SmartHome_FeatureOfInterest.owl#SmartHomeFeatureOfInterest -->
+
+    <rdf:Description rdf:about="http://ecareathome-ontology.mpi.aass.oru.se/patterns/SmartHome_FeatureOfInterest.owl#SmartHomeFeatureOfInterest">
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#isAbout"/>
+                <owl:someValuesFrom rdf:resource="http://ecareathome-ontology.mpi.aass.oru.se/patterns/SmartHome_Object.owl#SmartObject"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </rdf:Description>
+    
+
+
+    <!-- http://ecareathome-ontology.mpi.aass.oru.se/patterns/SmartHome_Network.owl#NodeStation -->
+
+    <rdf:Description rdf:about="http://ecareathome-ontology.mpi.aass.oru.se/patterns/SmartHome_Network.owl#NodeStation">
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://purl.oclc.org/NET/ssnx/ssn#onPlatform"/>
+                <owl:someValuesFrom rdf:resource="http://ecareathome-ontology.mpi.aass.oru.se/patterns/SmartHome_Object.owl#NodeHolder"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </rdf:Description>
+    
+
+
+    <!-- http://ecareathome-ontology.mpi.aass.oru.se/patterns/SmartHome_Network.owl#SmartHomeDeployment -->
+
+    <rdf:Description rdf:about="http://ecareathome-ontology.mpi.aass.oru.se/patterns/SmartHome_Network.owl#SmartHomeDeployment">
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://purl.oclc.org/NET/ssnx/ssn#deployedOnPlatform"/>
+                <owl:someValuesFrom rdf:resource="http://ecareathome-ontology.mpi.aass.oru.se/patterns/SmartHome_Place.owl#SmartHome"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </rdf:Description>
+    
+
+
+    <!-- http://ecareathome-ontology.mpi.aass.oru.se/patterns/SmartHome_Object.owl#NodeHolder -->
+
+    <rdf:Description rdf:about="http://ecareathome-ontology.mpi.aass.oru.se/patterns/SmartHome_Object.owl#NodeHolder">
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://purl.oclc.org/NET/ssnx/ssn#attachedSystem"/>
+                <owl:someValuesFrom rdf:resource="http://ecareathome-ontology.mpi.aass.oru.se/patterns/SmartHome_Network.owl#NodeStation"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </rdf:Description>
+    
+
+
+    <!-- http://ecareathome-ontology.mpi.aass.oru.se/patterns/SmartHome_Object.owl#SmartHomeAgent -->
+
+    <rdf:Description rdf:about="http://ecareathome-ontology.mpi.aass.oru.se/patterns/SmartHome_Object.owl#SmartHomeAgent">
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#isParticipantIn"/>
+                <owl:someValuesFrom rdf:resource="http://ecareathome-ontology.mpi.aass.oru.se/patterns/SmartHome_Event.owl#SmartHomeEvent"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </rdf:Description>
+    
+
+
+    <!-- http://ecareathome-ontology.mpi.aass.oru.se/patterns/SmartHome_Object.owl#SmartHomeObject -->
+
+    <rdf:Description rdf:about="http://ecareathome-ontology.mpi.aass.oru.se/patterns/SmartHome_Object.owl#SmartHomeObject">
+        <rdfs:subClassOf rdf:resource="http://ecareathome-ontology.mpi.aass.oru.se/patterns/SmartHome_Geometry.owl#SmartHomeGeoFeature"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#hasLocation"/>
+                <owl:someValuesFrom rdf:resource="http://ecareathome-ontology.mpi.aass.oru.se/patterns/SmartHome_Place.owl#SmartHomeSection"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </rdf:Description>
+    
+
+
+    <!-- http://ecareathome-ontology.mpi.aass.oru.se/patterns/SmartHome_Place.owl#SmartHome -->
+
+    <rdf:Description rdf:about="http://ecareathome-ontology.mpi.aass.oru.se/patterns/SmartHome_Place.owl#SmartHome">
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://purl.oclc.org/NET/ssnx/ssn#inDeployment"/>
+                <owl:someValuesFrom rdf:resource="http://ecareathome-ontology.mpi.aass.oru.se/patterns/SmartHome_Network.owl#SmartHomeDeployment"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </rdf:Description>
+    
+
+
+    <!-- http://ecareathome-ontology.mpi.aass.oru.se/patterns/SmartHome_Place.owl#SmartHomeSection -->
+
+    <rdf:Description rdf:about="http://ecareathome-ontology.mpi.aass.oru.se/patterns/SmartHome_Place.owl#SmartHomeSection">
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#isLocationOf"/>
+                <owl:someValuesFrom rdf:resource="http://ecareathome-ontology.mpi.aass.oru.se/patterns/SmartHome_Object.owl#SmartHomeObject"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </rdf:Description>
+    
+
+
+    <!-- http://ecareathome-ontology.mpi.aass.oru.se/patterns/SmartHome_Sensing.owl#SmartHomeSensor -->
+
+    <rdf:Description rdf:about="http://ecareathome-ontology.mpi.aass.oru.se/patterns/SmartHome_Sensing.owl#SmartHomeSensor">
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#isPartOf"/>
+                <owl:someValuesFrom rdf:resource="http://ecareathome-ontology.mpi.aass.oru.se/patterns/SmartHome_Network.owl#SenderNodeStation"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://ecareathome-ontology.mpi.aass.oru.se/SmartHome.owl#hasDBKey"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onDataRange rdf:resource="http://www.w3.org/2001/XMLSchema#int"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </rdf:Description>
+    
+
+
+    <!-- http://ecareathome-ontology.mpi.aass.oru.se/patterns/SmartHome_Sensing.owl#SmartHomeSensorOutput -->
+
+    <rdf:Description rdf:about="http://ecareathome-ontology.mpi.aass.oru.se/patterns/SmartHome_Sensing.owl#SmartHomeSensorOutput">
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#isObservableAt"/>
+                <owl:someValuesFrom rdf:resource="http://ecareathome-ontology.mpi.aass.oru.se/patterns/SmartHome_TimeInterval.owl#SmartHomeTimeInterval"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </rdf:Description>
+</rdf:RDF>
+
+
+
+<!-- Generated by the OWL API (version 4.2.6.20160910-2108) https://github.com/owlcs/owlapi -->
+
