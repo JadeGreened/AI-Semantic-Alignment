@@ -4,7 +4,6 @@ import re
 import requests
 import sys
 from num2words import num2words
-import os
 import pandas as pd
 import numpy as np
 from openai.cli import display
@@ -12,21 +11,25 @@ from openai.embeddings_utils import get_embedding, cosine_similarity
 import tiktoken
 from qdrant_client.models import PointStruct
 from qdrant_client import QdrantClient
-client = QdrantClient(path="C:\\Users\\20245\\Desktop\\Scientific Research\\db")  # Persists changes to disk
 from qdrant_client import QdrantClient
+
+# Below code seems not using
+# client = QdrantClient(path="C:\\Users\\20245\\Desktop\\Scientific Research\\db")  # Persists changes to disk
+
 qdrant_client = QdrantClient(
    url=os.getenv("Qdrant_URL"),
    api_key=os.getenv("Qdrant_API_KEY"),
 )
+
 collection_name = "embeddingCollection"
-API_KEY = os.getenv("AZURE_OPENAI_API_KEY")
-RESOURCE_ENDPOINT = os.getenv("AZURE_OPENAI_ENDPOINT")
 openai.api_type = "azure"
-openai.api_key = API_KEY
-openai.api_base = RESOURCE_ENDPOINT
+openai.api_key = os.getenv("AZURE_OPENAI_API_KEY")
+openai.api_base = os.getenv("AZURE_OPENAI_ENDPOINT")
 openai.api_version = "2023-05-15"
-url = openai.api_base + "/openai/deployments?api-version=2023-05-15"
-r = requests.get(url, headers={"api-key": API_KEY})
+
+# Below code seems not using
+# url = openai.api_base + "/openai/deployments?api-version=2023-05-15"
+# r = requests.get(url, headers={"api-key": API_KEY})
 
 def normalizeText(filepath):
    text = ""
