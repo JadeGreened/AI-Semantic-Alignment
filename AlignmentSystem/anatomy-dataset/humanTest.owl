@@ -1,0 +1,121 @@
+<owl:Class rdf:about="http://human.owl#NCI_C33736">
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Tarsal_Plate</rdfs:label>
+        <rdfs:subClassOf rdf:resource="http://human.owl#NCI_C38617"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://human.owl#UNDEFINED_part_of"/>
+                <owl:someValuesFrom rdf:resource="http://human.owl#NCI_C12713"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <oboInOwl:hasRelatedSynonym rdf:resource="http://human.owl#genid4060"/>
+    </owl:Class>
+
+    <owl:Class rdf:about="http://human.owl#NCI_C12715">
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Femoral_Artery</rdfs:label>
+        <rdfs:subClassOf rdf:resource="http://human.owl#NCI_C12372"/>
+        <oboInOwl:hasRelatedSynonym rdf:resource="http://human.owl#genid4234"/>
+    </owl:Class>
+
+    <owl:Class rdf:about="http://human.owl#NCI_C52701">
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Dorsal_Foot_Interosseous_Muscle</rdfs:label>
+        <rdfs:subClassOf rdf:resource="http://human.owl#NCI_C53172"/>
+        <oboInOwl:hasRelatedSynonym rdf:resource="http://human.owl#genid2908"/>
+    </owl:Class>
+
+    <owl:Class rdf:about="http://human.owl#NCI_C12385">
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Transverse_Colon</rdfs:label>
+        <rdfs:subClassOf rdf:resource="http://human.owl#NCI_C25763"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://human.owl#UNDEFINED_part_of"/>
+                <owl:someValuesFrom rdf:resource="http://human.owl#NCI_C12382"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://human.owl#UNDEFINED_part_of"/>
+                <owl:someValuesFrom rdf:resource="http://human.owl#NCI_C33829"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <oboInOwl:hasRelatedSynonym rdf:resource="http://human.owl#genid43"/>
+    </owl:Class>
+
+    <owl:Class rdf:about="http://human.owl#NCI_C32335">
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Cochlear_Duct</rdfs:label>
+        <rdfs:subClassOf rdf:resource="http://human.owl#NCI_C12948"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://human.owl#UNDEFINED_part_of"/>
+                <owl:someValuesFrom rdf:resource="http://human.owl#NCI_C32336"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <oboInOwl:hasRelatedSynonym rdf:resource="http://human.owl#genid2632"/>
+    </owl:Class>
+
+    <owl:Class rdf:about="http://human.owl#NCI_C33596">
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Splenic_Arteriole</rdfs:label>
+        <rdfs:subClassOf rdf:resource="http://human.owl#NCI_C12672"/>
+        <rdfs:subClassOf rdf:resource="http://human.owl#NCI_C38510"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://human.owl#UNDEFINED_part_of"/>
+                <owl:someValuesFrom rdf:resource="http://human.owl#NCI_C12432"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <oboInOwl:hasRelatedSynonym rdf:resource="http://human.owl#genid6168"/>
+    </owl:Class>
+
+    <owl:Class rdf:about="http://human.owl#NCI_C52767">
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Rib_12</rdfs:label>
+        <rdfs:subClassOf rdf:resource="http://human.owl#NCI_C12782"/>
+        <oboInOwl:hasRelatedSynonym rdf:resource="http://human.owl#genid4688"/>
+    </owl:Class>
+
+    <owl:Class rdf:about="http://human.owl#NCI_C32141">
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Arm</rdfs:label>
+        <rdfs:subClassOf rdf:resource="http://human.owl#NCI_C38628"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://human.owl#UNDEFINED_part_of"/>
+                <owl:someValuesFrom rdf:resource="http://human.owl#NCI_C12671"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <oboInOwl:hasRelatedSynonym rdf:resource="http://human.owl#genid1381"/>
+        <oboInOwl:hasDefinition rdf:resource="http://human.owl#genid1382"/>
+    </owl:Class>
+
+    <owl:Class rdf:about="http://human.owl#NCI_C32247">
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">CA2_Field_of_the_Cornu_Ammonis</rdfs:label>
+        <rdfs:subClassOf rdf:resource="http://human.owl#NCI_C13031"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://human.owl#UNDEFINED_part_of"/>
+                <owl:someValuesFrom rdf:resource="http://human.owl#NCI_C32374"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <oboInOwl:hasRelatedSynonym rdf:resource="http://human.owl#genid7299"/>
+    </owl:Class>
+
+    <owl:Class rdf:about="http://human.owl#NCI_C12412">
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Testis</rdfs:label>
+        <rdfs:subClassOf rdf:resource="http://human.owl#NCI_C13018"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://human.owl#UNDEFINED_part_of"/>
+                <owl:someValuesFrom rdf:resource="http://human.owl#NCI_C12785"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://human.owl#UNDEFINED_part_of"/>
+                <owl:someValuesFrom rdf:resource="http://human.owl#NCI_C12722"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <oboInOwl:hasRelatedSynonym rdf:resource="http://human.owl#genid7042"/>
+        <oboInOwl:hasRelatedSynonym rdf:resource="http://human.owl#genid7043"/>
+        <oboInOwl:hasRelatedSynonym rdf:resource="http://human.owl#genid7044"/>
+        <oboInOwl:hasDefinition rdf:resource="http://human.owl#genid7045"/>
+        <oboInOwl:hasRelatedSynonym rdf:resource="http://human.owl#genid7046"/>
+        <oboInOwl:hasRelatedSynonym rdf:resource="http://human.owl#genid7049"/>
+        <oboInOwl:hasRelatedSynonym rdf:resource="http://human.owl#genid7050"/>
+    </owl:Class>

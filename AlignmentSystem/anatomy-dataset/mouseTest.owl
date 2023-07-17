@@ -1,0 +1,86 @@
+<owl:Class rdf:about="http://mouse.owl#MA_0000270">
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">eyelid tarsus</rdfs:label>
+        <rdfs:subClassOf rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://mouse.owl#UNDEFINED_part_of"/>
+                <owl:someValuesFrom rdf:resource="http://mouse.owl#MA_0000268"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+
+    <owl:Class rdf:about="http://mouse.owl#MA_0001951">
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">femoral artery</rdfs:label>
+        <rdfs:subClassOf rdf:resource="http://mouse.owl#MA_0000064"/>
+    </owl:Class>
+
+    <owl:Class rdf:about="http://mouse.owl#MA_0002303">
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">dorsal foot interosseus muscle</rdfs:label>
+        <rdfs:subClassOf rdf:resource="http://mouse.owl#MA_0002302"/>
+    </owl:Class>
+
+    <owl:Class rdf:about="http://mouse.owl#MA_0001543">
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">transverse colon</rdfs:label>
+        <rdfs:subClassOf rdf:resource="http://mouse.owl#MA_0000335"/>
+    </owl:Class>
+
+    <owl:Class rdf:about="http://mouse.owl#MA_0000243">
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">cochlear duct</rdfs:label>
+        <rdfs:subClassOf rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://mouse.owl#UNDEFINED_part_of"/>
+                <owl:someValuesFrom rdf:resource="http://mouse.owl#MA_0000240"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://mouse.owl#UNDEFINED_part_of"/>
+                <owl:someValuesFrom rdf:resource="http://mouse.owl#MA_0000242"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+
+    <owl:Class rdf:about="http://mouse.owl#MA_0000763">
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">spleen central arteriole</rdfs:label>
+        <rdfs:subClassOf rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://mouse.owl#UNDEFINED_part_of"/>
+                <owl:someValuesFrom rdf:resource="http://mouse.owl#MA_0000762"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+
+    <owl:Class rdf:about="http://mouse.owl#MA_0001412">
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">rib 12</rdfs:label>
+        <rdfs:subClassOf rdf:resource="http://mouse.owl#MA_0000315"/>
+    </owl:Class>
+
+    <owl:Class rdf:about="http://mouse.owl#MA_0000033">
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">arm</rdfs:label>
+        <rdfs:subClassOf rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://mouse.owl#UNDEFINED_part_of"/>
+                <owl:someValuesFrom rdf:resource="http://mouse.owl#MA_0000025"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+
+    <owl:Class rdf:about="http://mouse.owl#MA_0000951">
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">hippocampus CA2</rdfs:label>
+        <rdfs:subClassOf rdf:resource="http://mouse.owl#MA_0002428"/>
+    </owl:Class>
+    
+    <owl:Class rdf:about="http://mouse.owl#MA_0000411">
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">testis</rdfs:label>
+        <rdfs:subClassOf rdf:resource="http://mouse.owl#MA_0000545"/>
+        <rdfs:subClassOf rdf:resource="http://mouse.owl#MA_0002420"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://mouse.owl#UNDEFINED_part_of"/>
+                <owl:someValuesFrom rdf:resource="http://mouse.owl#MA_0000396"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
