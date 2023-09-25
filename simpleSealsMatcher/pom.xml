@@ -29,60 +29,14 @@
     
     <dependencies>
         <!-- dependency for jena matchers - for other matchers you can replace it with artifactId: matching-base -->
+        <!-- https://mvnrepository.com/artifact/de.uni-mannheim.informatik.dws.melt/matching-base -->
         <dependency>
             <groupId>de.uni-mannheim.informatik.dws.melt</groupId>
-            <artifactId>matching-jena</artifactId>
-            <version>${matching.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.squareup.okhttp3</groupId>
-            <artifactId>okhttp</artifactId>
-            <version>4.9.1</version> <!-- replace with the latest version -->
-        </dependency>
-        <dependency>
-            <groupId>de.uni-mannheim.informatik.dws.melt</groupId>
-            <artifactId>matching-eval</artifactId>
-            <version>${matching.version}</version>
-        </dependency>
-        <!-- This dependency is necessary for seals_external. It contains the cli wrapper. -->
-        <dependency>
-            <groupId>de.uni-mannheim.informatik.dws.melt</groupId>
-            <artifactId>receiver-cli</artifactId>
-            <version>${matching.version}</version>
+            <artifactId>matching-base</artifactId>
+            <version>3.3</version>
         </dependency>
 
-        <dependency>
-            <groupId>de.uni-mannheim.informatik.dws.melt</groupId>
-            <artifactId>matching-eval</artifactId>
-            <version>${matching.version}</version>
-        </dependency>
-        <!-- Since we are evaluating also a docker container, we have to re-declare docker dependencies. -->
-        <dependency>
-            <groupId>com.github.docker-java</groupId>
-            <artifactId>docker-java-core</artifactId>
-            <version>3.2.7</version>
-        </dependency>
-        <dependency>
-            <groupId>com.github.docker-java</groupId>
-            <artifactId>docker-java-transport-httpclient5</artifactId>
-            <version>3.2.7</version>
-        </dependency>
 
-        <dependency>
-            <groupId>de.uni-mannheim.informatik.dws.melt</groupId>
-            <artifactId>matching-eval</artifactId>
-            <version>${matching.version}</version>
-            <scope>test</scope>
-            <!-- only in test scope, can only be used when running tests.
-                 You can also remove the scope but then remove the whole dependency when packaging the matcher.
-                 Otherwise you get a lot of unused dependencies in your matcher.-->
-        </dependency>
-        <dependency>
-            <groupId>com.google.code.gson</groupId>
-            <artifactId>gson</artifactId>
-            <version>2.8.6</version> <!-- replace with the latest version -->
-        </dependency>
-        
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-log4j12</artifactId>
@@ -120,6 +74,21 @@
             <artifactId>junit-jupiter-engine</artifactId>
             <version>5.9.0</version>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>de.uni-mannheim.informatik.dws.melt</groupId>
+            <artifactId>matching-data</artifactId>
+            <version>3.3</version>
+        </dependency>
+        <dependency>
+            <groupId>de.uni-mannheim.informatik.dws.melt</groupId>
+            <artifactId>matching-eval</artifactId>
+            <version>3.3</version>
+        </dependency>
+        <dependency>
+            <groupId>de.uni-mannheim.informatik.dws.melt</groupId>
+            <artifactId>matching-jena-matchers</artifactId>
+            <version>3.3</version>
         </dependency>
 
     </dependencies>

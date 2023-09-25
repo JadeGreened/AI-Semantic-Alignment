@@ -1,9 +1,14 @@
 package de.uni_mannheim.informatik.dws.melt.demomatcher;
 
+import de.uni_mannheim.informatik.dws.melt.matching_data.TrackRepository;
+import de.uni_mannheim.informatik.dws.melt.matching_eval.ExecutionResultSet;
+import de.uni_mannheim.informatik.dws.melt.matching_eval.Executor;
+import de.uni_mannheim.informatik.dws.melt.matching_eval.evaluator.EvaluatorCSV;
 import de.uni_mannheim.informatik.dws.melt.matching_jena.MatcherYAAAJena;
 import java.util.List;
 import java.util.Properties;
 
+import de.uni_mannheim.informatik.dws.melt.matching_jena_matchers.external.matcher.SimpleStringMatcher;
 import de.uni_mannheim.informatik.dws.melt.yet_another_alignment_api.Alignment;
 import org.apache.jena.ontology.OntModel;
 import org.apache.jena.ontology.OntResource;
@@ -93,5 +98,11 @@ public class LevenshteinMatcher extends MatcherYAAAJena {
             } catch (Exception e) {
                 e.printStackTrace();
             }
+            ExecutionResultSet result = Executor.run(TrackRepository.Anatomy.Default, new SimpleStringMatcher());
+            EvaluatorCSV evaluatorCSV = new EvaluatorCSV(result);
+            evaluatorCSV.writeToDirectory();
+
         }
+
+
 }
