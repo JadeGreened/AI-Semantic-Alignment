@@ -12,7 +12,10 @@ import de.uni_mannheim.informatik.dws.melt.matching_eval.ExecutionResultSet;
 import de.uni_mannheim.informatik.dws.melt.matching_eval.Executor;
 import de.uni_mannheim.informatik.dws.melt.matching_eval.evaluator.EvaluatorCSV;
 import de.uni_mannheim.informatik.dws.melt.matching_jena.MatcherYAAAJena;
+import org.apache.jena.ontology.*;
+import org.apache.jena.rdf.model.ModelFactory;
 
+import java.net.URI;
 import java.util.List;
 import java.util.Properties;
 
@@ -21,6 +24,9 @@ import de.uni_mannheim.informatik.dws.melt.yet_another_alignment_api.Alignment;
 import org.apache.jena.ontology.OntModel;
 import org.apache.jena.ontology.OntResource;
 import org.apache.jena.rdf.model.ModelFactory;
+import org.apache.jena.rdf.model.Statement;
+import org.apache.jena.rdf.model.StmtIterator;
+import org.apache.zookeeper.Op;
 
 import java.nio.file.*;
 import java.nio.charset.StandardCharsets;
@@ -31,89 +37,139 @@ import java.io.*;
 public class Test {
 
 
-    //            String ontology1 = "";
-//            String ontology2 = "";
-//            ArrayList<String> matches1 = new ArrayList<>();
-//            ArrayList<String> matches2 = new ArrayList<>();
-//            String pattern = "你的正则表达式";  // 请替换为你的正则表达式
-//            Pattern r = Pattern.compile(pattern);
-//
-//            try {
-//                ontology1 = new String(Files.readAllBytes(Paths.get("D:\\WorkSpace\\projects\\AI-Semantic-Alignment-\\01_OntologiesTask11\\TestDataSet\\humanTest.owl")), "UTF-8");
-//                Matcher m1 = r.matcher(ontology1);
-//                while (m1.find()) {
-//                    matches1.add(m1.group());
-//                }
-//                ontology2 = new String(Files.readAllBytes(Paths.get("D:\\WorkSpace\\projects\\AI-Semantic-Alignment-\\01_OntologiesTask11\\TestDataSet\\mouseTest.owl")), "UTF-8");
-//                Matcher m2 = r.matcher(ontology2);
-//                while (m2.find()) {
-//                    matches2.add(m2.group());
-//                }
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//            }
-//
-//            String collection_name = "embededComponentPair";
-//
-//            ArrayList<ArrayList<String>> pairs = new ArrayList<>();
-//            for (String match1 : matches1) {
-//                for (String match2 : matches2) {
-//                    pairs.add(new ArrayList<>(Arrays.asList(match1, match2)));
-//                }
-//            }
-//
-//            //这里的qdrant并没有实现，主要是我看qdrant并没有开放余弦相似度的java接口。
-//            Qdrant qdrant = new Qdrant();
-//            qdrant.initiatingDataBase(collection_name);
-//            qdrant.sendToDatabase(matches2, collection_name);
-//
-//            HashMap<String, String> true_align_dict = new HashMap<>();
-//            for (int i = 0; i < matches1.size(); i++) {
-//                true_align_dict.put(matches1.get(i), matches2.get(i));
-//            }
-//
-//            ArrayList<String> keys = new ArrayList<>(true_align_dict.keySet());
-//            ArrayList<Map.Entry<String, String>> true_align_list = new ArrayList<>(true_align_dict.entrySet());
-//
-//            ArrayList<String> semantic_list = qdrant.query(matches1.get(1), collection_name);
-//            ArrayList<ArrayList<String>> align_list = new ArrayList<>();
-//
-//            ChatGPT GPT = new ChatGPT();
-//            for (String match : matches1) {
-//                semantic_list = qdrant.query(match, collection_name);
-//                for (String item : semantic_list) {
-//                    String components = "[" + match + ":" + item + "]";
-//                    String result = GPT.toChatGPT(String.format("prompt7 %s", components));  // 请替换 "prompt7" 为你的实际字符串
-//                    System.out.println(result);
-//                    if (result.equalsIgnoreCase("yes")) {
-//                        align_list.add(new ArrayList<>(Arrays.asList(match, item)));
-//                    }
-//                }
-//
-//            }
-    public static class MyPipelineMatcher extends MatcherPipelineYAAAJena {
+/*
+重写的整个Matcher类,可以放到整个的接口中去evaluate,这里面还有一些(很多)bug我还没来的急调整,
+明天有早九TAT,世尧你如果实在看得不顺眼的话可以调整一下，运行一下的话就可以看到报错。
+ */
+    public static class GPTAlignment extends MatcherYAAAJena {
 
 
-        @Override
-        protected List<MatcherYAAAJena> initializeMatchers() {
-            List<MatcherYAAAJena> result = new ArrayList<>();
 
-            // let's add a simple exact string matcher
-            result.add(new ExactStringMatcher());
 
-            // let's add a background matcher
-            result.add(new BackgroundMatcher(new WordNetKnowledgeSource(),
-                    ImplementedBackgroundMatchingStrategies.SYNONYMY, 0.5));
+        private String getURI(String data){
+            // 找到 "Class  URI: " 和 "Label: " 的位置
+            int startIndex = data.indexOf("Class  URI: ") + "Class  URI: ".length();
+            int endIndex = data.indexOf("Label: ");
 
-            return result;
+            // 使用 substring 提取 URI
+            String classUri = data.substring(startIndex, endIndex).trim();
+
+            // 将字符串转为 URI
+            return classUri;
+        }
+/*
+这里是用的jena的api接口来处理的owl文件，这样操作比较方便，而且能直接拿到class的URI（Uniform Resource Identifier）。并且也能找到一个ontology的全部属性和信息，
+如果你觉得不好的话可以改。
+ */
+        private void initiatieTheSource(OntModel target, ArrayList<String> sourceList) {
+            for (OntClass ontClass : target.listClasses().toList()) {
+                //如果是一个匿名类，这里要拿来用的话是非常困难的，一般对齐当中也不会考虑匿名类
+                //当然匿名类里面也会有很多的信息，可以拿来使用。这个就要看后续的算法优化了
+                if (ontClass.isAnon()) {
+                    System.out.println("This is a anonymous class--------------------------------");
+                    System.out.println("Uri : " + ontClass.asClass().getURI());
+                    for (Iterator<OntClass> i = ontClass.listSubClasses(); i.hasNext(); ) {
+                        OntClass subClass = i.next();
+                        System.out.println("anon subclass: " + subClass.getURI());
+                        //子类
+                    }
+                    for (Iterator<OntClass> i = ontClass.listSuperClasses(); i.hasNext(); ) {
+                        OntClass superClass = i.next();
+                        System.out.println("anon superclass: " + superClass.getURI());
+                        //超类
+                    }
+                    for (StmtIterator i = ontClass.listProperties(); i.hasNext(); ) {
+                        Statement stmt = i.next();
+                        System.out.println("Property: " + stmt.getPredicate().getLocalName());
+                        System.out.println("Value: " + stmt.getObject().toString());
+                        //属性
+                    }
+                } else {
+                    //如果是一个具名类
+                    System.out.println("-----------------------------------------");
+                    String info = "";
+                    String uri = ontClass.getURI();
+                    System.out.println("Class  URI: " + uri);
+                    info += "Class  URI: " + uri + "\n";
+
+                    // 获取并打印类的标签
+                    String label = ontClass.getLabel(null);
+                    System.out.println("Label: " + label);
+                    info += "Label: " + label + "\n";
+                    //所有的属性
+                    for (StmtIterator i = ontClass.listProperties(); i.hasNext(); ) {
+                        Statement stmt = i.next();
+                        System.out.println("Property: " + stmt.getPredicate().getLocalName());
+                        System.out.println("Value: " + stmt.getObject().toString());
+                        info += "Property: " + stmt.getPredicate().getLocalName() + "\n";
+                        info += "Value: " + stmt.getObject().toString() + "\n";
+                    }
+                    sourceList.add(info);
+
+                }
+            }
         }
 
 
+        @Override
+        public Alignment match(OntModel ontModel, OntModel ontModel1, Alignment alignment, Properties properties) throws Exception {
+            OpenAI openAI = new OpenAI();
+            String prompt = "<Problem Definition>\n" +
+                    "In this task, we are given two ontologies in the form of Relation(Subject, Object), which\n" +
+                    "consist of classes and properties.\n" +
+                    "<Ontologies Triples>\n" +
+                    "[Ontology 1:Ontology2]:%s\n" +
+                    "    Do you think these two component are aligned? If so, please output:yes, otherwise, please output:no(just\"yes\" or \"no\", small character no other symbols required) ";
+            String className = "ontology";
+            OntModel source = ModelFactory.createOntologyModel(OntModelSpec.OWL_DL_MEM);
+            OntModel target = ModelFactory.createOntologyModel(OntModelSpec.OWL_DL_MEM);
+            source.read("D:\\WorkSpace\\projects\\sealsproj\\simpleSealsMatcher\\src\\main\\java\\DataSet\\human.owl");
+            target.read("D:\\WorkSpace\\projects\\sealsproj\\simpleSealsMatcher\\src\\main\\java\\DataSet\\mouse.owl");
+            ArrayList<String> SourceList = new ArrayList<>();
+            ArrayList<String> TargetList = new ArrayList<>();
+
+            // 获取一个类
+            initiatieTheSource(source, SourceList);
+            initiatieTheSource(target, TargetList);
+            Zilliz.initiatingDataBase();
+            try {
+                Zilliz.insertData(className,TargetList);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+            /*
+            这里还是按照原来的算法来的，
+            先语义搜索到相似的class，然后再进行对齐，如果我们的整个模型测出来的效果不好的话，可以用暴力遍历。
+             */
+            for (String s : SourceList) {
+                List<String> query = Zilliz.query(className, s);
+                for (String s1 : query) {
+                    String tuple = "[%s,%s]";
+                    String ontologies = String.format(tuple,s,s1);
+                    String input = String.format(prompt, ontologies);
+                    String thought = openAI.think(input);
+                    System.out.println(thought);
+                    if (thought.equals("yes")){
+                        String uriSource = getURI(s);
+                        String uriTarget = getURI(s1);
+                        alignment.add(uriSource,uriTarget);
+                    }else if (thought.equals("Yes")){
+                        String uriSource = getURI(s);
+                        String uriTarget = getURI(s1);
+                        alignment.add(uriSource,uriTarget);
+                    }
+                }
+            }
+
+
+            return alignment;
+        }
     }
 
     public static void main(String[] args) {
+
         // let's initialize our matcher
-        MyPipelineMatcher myMatcher = new MyPipelineMatcher();
+        GPTAlignment myMatcher = new GPTAlignment();
 
         // let's execute our matcher on the OAEI Anatomy test case
         ExecutionResultSet ers = Executor.run(TrackRepository.Anatomy.Default.getFirstTestCase(), myMatcher);
@@ -122,10 +178,23 @@ public class Test {
         // does not exist).
         EvaluatorCSV evaluatorCSV = new EvaluatorCSV(ers);
         evaluatorCSV.writeToDirectory();
-
     }
-
-
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
