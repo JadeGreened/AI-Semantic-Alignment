@@ -90,6 +90,11 @@
             <artifactId>matching-jena-matchers</artifactId>
             <version>3.3</version>
         </dependency>
+        <dependency>
+            <groupId>org.apache.jena</groupId>
+            <artifactId>jena-core</artifactId>
+            <version>3.17.0</version>
+        </dependency>
 
     </dependencies>
 

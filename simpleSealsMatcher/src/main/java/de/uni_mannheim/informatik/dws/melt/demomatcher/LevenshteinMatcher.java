@@ -7,9 +7,12 @@ import de.uni_mannheim.informatik.dws.melt.matching_eval.evaluator.EvaluatorCSV;
 import de.uni_mannheim.informatik.dws.melt.matching_jena.MatcherYAAAJena;
 import java.util.List;
 import java.util.Properties;
+import java.util.Set;
 
 import de.uni_mannheim.informatik.dws.melt.matching_jena_matchers.external.matcher.SimpleStringMatcher;
 import de.uni_mannheim.informatik.dws.melt.yet_another_alignment_api.Alignment;
+import de.uni_mannheim.informatik.dws.melt.yet_another_alignment_api.Correspondence;
+import org.apache.jena.ontology.OntClass;
 import org.apache.jena.ontology.OntModel;
 import org.apache.jena.ontology.OntResource;
 import org.apache.jena.rdf.model.ModelFactory;
@@ -34,7 +37,45 @@ public class LevenshteinMatcher extends MatcherYAAAJena {
 //        Alignment alignment = new Alignment();
 //        matchResources(source.listClasses().toList(), target.listClasses().toList(), alignment);//match only classes
 //        return alignment;
+
+        // TODO: finish below match
+        // return myMatch(source, target);
     return null;
+    }
+
+    private Alignment myMatch(OntModel source, OntModel target)  {
+        OntologyAgent agent1 = new OntologyAgent(source);
+        OntologyAgent agent2 = new OntologyAgent(target);
+        Alignment alignment = new Alignment();
+        while (!agent1.isFinished() || !agent2.isFinished()){
+            if (!agent1.isFinished()) {
+                Correspondence correspondence = startNegotiationForOneEntity(agent1, agent2);
+                if (correspondence != null){
+                    alignment.add(correspondence);
+                }
+            }
+            if (!agent2.isFinished()) {
+                Correspondence correspondence = startNegotiationForOneEntity(agent2, agent1);
+                if (correspondence != null){
+                    alignment.add(correspondence);
+                }
+            }
+        }
+        return alignment;
+    }
+
+    private Correspondence startNegotiationForOneEntity(OntologyAgent agent1, OntologyAgent agent2) {
+        OntClass entity = agent1.startNegotiation();
+        if (entity == null){
+            agent1.Finish();
+            return null;
+        }
+        Set<PotentialCorrespondence> potentialCorrespondences = agent2.receiveNegotiation(entity);
+        if (potentialCorrespondences == null){
+            return null;
+        }
+        // TODO: agents negotiate on the potential correspondences, and return the final correspondence
+        return null;
     }
 
 
