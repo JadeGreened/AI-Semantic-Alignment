@@ -182,7 +182,7 @@ public class Zilliz {
     }
 
     public static void main(String[] args) throws Exception {
-        Zilliz db = new Zilliz("ontology");
+        Zilliz db = new Zilliz("source");
         db.dropCollection();
     }
 }

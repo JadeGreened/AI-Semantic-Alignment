@@ -14,11 +14,11 @@ public class OntologyAgent {
     private Object JointKnowledgeBase;  // TODO: define later
     private boolean isFinished = false;
 
-    public OntologyAgent(OntModel ontology){
+    public OntologyAgent(OntModel ontology, String collectionName){
         this.ontology = ontology;
         this.ai = new OpenAI();
         // TODO: fix below codes
-        this.db = new Zilliz();
+        this.db = new Zilliz(collectionName);
         this.db.initOntology(ontology);
     }
 
@@ -32,7 +32,7 @@ public class OntologyAgent {
      */
     public OntClass startNegotiation(){
         // TODO: return one entity that has not been negotiated
-        db.getOneEntityNotNegotiated();
+//        db.getOneEntityNotNegotiated();
         return null;
     }
 
@@ -79,6 +79,10 @@ public class OntologyAgent {
 
     public void Finish() {
         isFinished = true;
+    }
+
+    public void clean(){
+        this.db.dropCollection();
     }
 
 // region private methods for negotiation
