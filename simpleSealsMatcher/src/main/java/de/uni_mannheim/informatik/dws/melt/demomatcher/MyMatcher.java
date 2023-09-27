@@ -4,18 +4,21 @@ import de.uni_mannheim.informatik.dws.melt.matching_jena.MatcherYAAAJena;
 import de.uni_mannheim.informatik.dws.melt.yet_another_alignment_api.Alignment;
 import org.apache.jena.ontology.OntClass;
 import org.apache.jena.ontology.OntModel;
-import org.apache.jena.ontology.OntModelSpec;
-import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.rdf.model.StmtIterator;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
 
 public class MyMatcher extends MatcherYAAAJena {
-    private static final String CLASS_NAME = "ontology";
+    private Zilliz sourceDatabase;
+    private Zilliz targetDatabase;
+    public MyMatcher(){
+        super();
+        sourceDatabase = new Zilliz("source");
+        targetDatabase = new Zilliz("target");
+    }
 
     @Override
     public Alignment match(OntModel source, OntModel target, Alignment inputAlignment, Properties properties) throws Exception {
@@ -27,9 +30,11 @@ public class MyMatcher extends MatcherYAAAJena {
         ArrayList<String> sourceList = toArrayList(source);
         ArrayList<String> targetList = toArrayList(target);
 
-        Zilliz.initiatingDataBase();
+        // TODO: here are problems.
+        //  Failed to create collection: exceeded the limit number of collections per DB, maxCollectionNumPerDB={2}
+        sourceDatabase.initiatingDataBase();
         try {
-            Zilliz.insertData(CLASS_NAME,targetList);
+            sourceDatabase.insertData(targetList);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -38,7 +43,7 @@ public class MyMatcher extends MatcherYAAAJena {
             先语义搜索到相似的class，然后再进行对齐，如果我们的整个模型测出来的效果不好的话，可以用暴力遍历。
              */
         for (String s : sourceList) {
-            List<String> query = Zilliz.query(CLASS_NAME, s);
+            List<String> query = sourceDatabase.query(s);
             for (String s1 : query) {
                 String thought = openAI.comepareComponenties(s, s1);
                 System.out.println(thought);

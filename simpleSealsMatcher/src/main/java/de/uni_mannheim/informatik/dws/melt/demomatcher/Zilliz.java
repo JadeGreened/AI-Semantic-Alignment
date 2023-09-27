@@ -41,8 +41,11 @@ public class Zilliz {
             .withToken("0a6b71a6a363b8d87abd92436be75fc2ea8b89912d121a3d4dbc0b43bc6fee86618697b9c785761dbecbe44e9f8d206b74378e94")
             .build();
     public static final  MilvusServiceClient client = new MilvusServiceClient(connectParam);
-    public Zilliz(){}
-    public static void initiatingDataBase(){
+    private String collectionName;
+    public Zilliz(String collectionName){
+        this.collectionName = collectionName;
+    }
+    public void initiatingDataBase(){
         // 1. Connect to Zilliz Cloud
         System.out.println("Connected to Zilliz Cloud!");
 
@@ -69,7 +72,7 @@ public class Zilliz {
                 .withMaxLength(512)
                 .build();
         CreateCollectionParam createCollectionParam = CreateCollectionParam.newBuilder()
-                .withCollectionName("ontology")
+                .withCollectionName(collectionName)
                 .withDescription("Schema of source ontology")
                 .addFieldType(id)
                 .addFieldType(title_vector)
@@ -89,7 +92,7 @@ public class Zilliz {
 /*
 这里是要仔细看的
  */
-    public static String insertData(String collectionName,ArrayList<String> data) throws Exception {
+    public String insertData(ArrayList<String> data) throws Exception {
         OpenAI openAI = new OpenAI();
         for (int i = 0; i < data.size(); i++) {
             String json = "{\n" +
@@ -113,7 +116,7 @@ public class Zilliz {
         }
         return "success";
     }
-    public static List<String> query(String collectionName , String ontology){
+    public List<String> query(String ontology){
         List<String> result = new ArrayList<>();
         OpenAI openAI = new OpenAI();
         List<Double> embedding = openAI.getEmbeddings(ontology);
@@ -147,7 +150,7 @@ public class Zilliz {
         return result;
     }
 
-    public static List<JSONObject> getRows(JSONArray dataset, int counts) {
+    public List<JSONObject> getRows(JSONArray dataset, int counts) {
         List<JSONObject> rows = new ArrayList<JSONObject>();
         for (int i = 0; i < counts; i++) {
             JSONObject json_row = new JSONObject(1, true);
@@ -164,5 +167,17 @@ public class Zilliz {
         return rows;
     }
 
+    public void dropCollection(){
+        DropCollectionParam dropCollectionParam = DropCollectionParam.newBuilder()
+                .withCollectionName(collectionName)
+                .build();
+
+        R<RpcStatus> dropCollection = client.dropCollection(dropCollectionParam);
+
+        if (dropCollection.getException() != null) {
+            System.out.println("Failed to drop collection: " + dropCollection.getException().getMessage());
+            return;
+        }
+    }
 
 }
