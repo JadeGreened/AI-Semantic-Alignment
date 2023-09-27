@@ -44,8 +44,8 @@ public class LevenshteinMatcher extends MatcherYAAAJena {
     }
 
     private Alignment myMatch(OntModel source, OntModel target)  {
-        OntologyAgent agent1 = new OntologyAgent(source);
-        OntologyAgent agent2 = new OntologyAgent(target);
+        OntologyAgent agent1 = new OntologyAgent(source, "source");
+        OntologyAgent agent2 = new OntologyAgent(target, "target");
         Alignment alignment = new Alignment();
         while (!agent1.isFinished() || !agent2.isFinished()){
             if (!agent1.isFinished()) {

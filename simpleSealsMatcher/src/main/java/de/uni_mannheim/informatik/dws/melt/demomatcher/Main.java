@@ -68,6 +68,7 @@ public class Main {
     private static void testOntModelProperties(){
         OntModel source = ModelFactory.createOntologyModel(OntModelSpec.OWL_DL_MEM);
         source.read("/Users/shiyaozhang/Developer/AI-Semantic-Alignment/simpleSealsMatcher/src/main/java/DataSet/human.owl");
+
         OntClass var = source.listClasses().next();
         print("var==================");
         print(var.getLabel(null));

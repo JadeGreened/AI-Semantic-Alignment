@@ -12,29 +12,21 @@ import java.util.List;
 import java.util.Properties;
 
 public class MyMatcher extends MatcherYAAAJena {
-    private Zilliz sourceDatabase;
-    private Zilliz targetDatabase;
-    public MyMatcher(){
-        super();
-        sourceDatabase = new Zilliz("source");
-        targetDatabase = new Zilliz("target");
-    }
-
+    private OntologyAgent sourceAgent;
+    private OntologyAgent targetAgent;
     @Override
     public Alignment match(OntModel source, OntModel target, Alignment inputAlignment, Properties properties) throws Exception {
         // setup
+        setup(source, target);
+
         Alignment alignment = new Alignment();
-        OpenAI openAI = new OpenAI();
 
         // 获取一个类
         ArrayList<String> sourceList = toArrayList(source);
         ArrayList<String> targetList = toArrayList(target);
 
-        // TODO: here are problems.
-        //  Failed to create collection: exceeded the limit number of collections per DB, maxCollectionNumPerDB={2}
-        sourceDatabase.initiatingDataBase();
         try {
-            sourceDatabase.insertData(targetList);
+//            sourceDatabase.insertData(targetList);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -42,23 +34,35 @@ public class MyMatcher extends MatcherYAAAJena {
             这里还是按照原来的算法来的，
             先语义搜索到相似的class，然后再进行对齐，如果我们的整个模型测出来的效果不好的话，可以用暴力遍历。
              */
-        for (String s : sourceList) {
-            List<String> query = sourceDatabase.query(s);
-            for (String s1 : query) {
-                String thought = openAI.comepareComponenties(s, s1);
-                System.out.println(thought);
-                if (thought.equals("yes")){
-                    String uriSource = getURI(s);
-                    String uriTarget = getURI(s1);
-                    alignment.add(uriSource,uriTarget);
-                }else if (thought.equals("Yes")){
-                    String uriSource = getURI(s);
-                    String uriTarget = getURI(s1);
-                    alignment.add(uriSource,uriTarget);
-                }
-            }
-        }
+//        for (String s : sourceList) {
+//            List<String> query = sourceDatabase.query(s);
+//            for (String s1 : query) {
+//                String thought = openAI.comepareComponenties(s, s1);
+//                System.out.println(thought);
+//                if (thought.equals("yes")){
+//                    String uriSource = getURI(s);
+//                    String uriTarget = getURI(s1);
+//                    alignment.add(uriSource,uriTarget);
+//                }else if (thought.equals("Yes")){
+//                    String uriSource = getURI(s);
+//                    String uriTarget = getURI(s1);
+//                    alignment.add(uriSource,uriTarget);
+//                }
+//            }
+//        }
+        clean();
+
         return alignment;
+    }
+
+    private void setup(OntModel source, OntModel target){
+        this.sourceAgent = new OntologyAgent(source, "source");
+        this.targetAgent = new OntologyAgent(target, "target");
+    }
+
+    private void clean(){
+        this.sourceAgent.clean();
+        this.targetAgent.clean();
     }
 
     private String getURI(String data){
@@ -78,7 +82,6 @@ public class MyMatcher extends MatcherYAAAJena {
     如果你觉得不好的话可以改。
      */
     private ArrayList<String> toArrayList(OntModel ontology) {
-        print("=========================================");
         print("Start transfer ontology to ArrayList");
 
         ArrayList<String> list = new ArrayList<>();
@@ -127,7 +130,6 @@ public class MyMatcher extends MatcherYAAAJena {
                 }
                 list.add(info);
             }
-            print(ontClass.getURI());
         }
         return list;
     }
