@@ -15,26 +15,21 @@ import java.util.List;
 import java.util.Properties;
 
 public class MyMatcher extends MatcherYAAAJena {
+    private static final String CLASS_NAME = "ontology";
+
     @Override
     public Alignment match(OntModel source, OntModel target, Alignment inputAlignment, Properties properties) throws Exception {
-        setup();
+        // setup
         Alignment alignment = new Alignment();
         OpenAI openAI = new OpenAI();
-        String prompt = "<Problem Definition>\n" +
-                "In this task, we are given two ontologies in the form of Relation(Subject, Object), which\n" +
-                "consist of classes and properties.\n" +
-                "<Ontologies Triples>\n" +
-                "[Ontology 1:Ontology2]:%s\n" +
-                "    Do you think these two component are aligned? If so, please output:yes, otherwise, please output:no(just\"yes\" or \"no\", small character no other symbols required) ";
-        String className = "ontology";
-
 
         // 获取一个类
         ArrayList<String> sourceList = toArrayList(source);
         ArrayList<String> targetList = toArrayList(target);
+
         Zilliz.initiatingDataBase();
         try {
-            Zilliz.insertData(className,targetList);
+            Zilliz.insertData(CLASS_NAME,targetList);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -43,12 +38,9 @@ public class MyMatcher extends MatcherYAAAJena {
             先语义搜索到相似的class，然后再进行对齐，如果我们的整个模型测出来的效果不好的话，可以用暴力遍历。
              */
         for (String s : sourceList) {
-            List<String> query = Zilliz.query(className, s);
+            List<String> query = Zilliz.query(CLASS_NAME, s);
             for (String s1 : query) {
-                String tuple = "[%s,%s]";
-                String ontologies = String.format(tuple,s,s1);
-                String input = String.format(prompt, ontologies);
-                String thought = openAI.think(input);
+                String thought = openAI.comepareComponenties(s, s1);
                 System.out.println(thought);
                 if (thought.equals("yes")){
                     String uriSource = getURI(s);
@@ -62,10 +54,6 @@ public class MyMatcher extends MatcherYAAAJena {
             }
         }
         return alignment;
-    }
-
-    private void setup(){
-
     }
 
     private String getURI(String data){

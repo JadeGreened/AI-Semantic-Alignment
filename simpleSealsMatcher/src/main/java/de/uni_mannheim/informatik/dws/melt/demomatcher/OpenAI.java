@@ -30,16 +30,17 @@ public class OpenAI {
             .credential(new AzureKeyCredential(azureOpenaiKey))
             .buildClient();
 
-    public String think(String prompt) {
+    public String comepareComponenties(String component1, String component2){
+        String prompt = "<Problem Definition>\n" +
+                "In this task, we are given two ontologies in the form of Relation(Subject, Object), which\n" +
+                "consist of classes and properties.\n" +
+                "<Ontologies Triples>\n" +
+                "[Ontology 1:Ontology2]:%s\n" +
+                "    Do you think these two component are aligned? If so, please output:yes, otherwise, please output:no(just\"yes\" or \"no\", small character no other symbols required) ";
 
-
-        List<ChatMessage> chatMessages = new ArrayList<>();
-        chatMessages.add(new ChatMessage(ChatRole.USER, prompt));
-
-        ChatCompletions chatCompletions = client.getChatCompletions(deploymentOrModelId, new ChatCompletionsOptions(chatMessages));
-        String result = chatCompletions.getChoices().get(0).getMessage().getContent();
-        System.out.println(result);
-        return result;
+        String ontologies = String.format("[%s,%s]", component1, component2);
+        String input = String.format(prompt, ontologies);
+        return think(input);
     }
 
     public List<Double> getEmbeddings(String prompt) {
@@ -49,6 +50,15 @@ public class OpenAI {
         return embeddings.getData().get(0).getEmbedding();
     }
 
+    private String think(String prompt) {
+        List<ChatMessage> chatMessages = new ArrayList<>();
+        chatMessages.add(new ChatMessage(ChatRole.USER, prompt));
+
+        ChatCompletions chatCompletions = client.getChatCompletions(deploymentOrModelId, new ChatCompletionsOptions(chatMessages));
+        String result = chatCompletions.getChoices().get(0).getMessage().getContent();
+        System.out.println(result);
+        return result;
+    }
 }
 
 
