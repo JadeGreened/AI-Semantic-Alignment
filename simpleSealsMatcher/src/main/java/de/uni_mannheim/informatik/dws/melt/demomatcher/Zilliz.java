@@ -50,9 +50,8 @@ public class Zilliz {
     private String collectionName;
     public Zilliz(String collectionName){
         this.collectionName = collectionName;
-        this.initiatingDataBase();
     }
-    private void initiatingDataBase(){
+    public Zilliz initCollection(){
         // 2. Create collection
         FieldType id = FieldType.newBuilder()
                 .withName("id")
@@ -82,17 +81,28 @@ public class Zilliz {
 
         if (collection.getException() != null) {
             System.out.println("Failed to create collection: " + collection.getException().getMessage());
+            return null;
+        }
+        System.out.println("Collection " + collectionName + " created!");
+        return this;
+    }
+
+    public void insert(List<JSONObject> rows){
+        InsertRowsParam insertRowsParam = InsertRowsParam.newBuilder()
+                .withCollectionName(collectionName)
+                .withRows(rows)
+                .build();
+
+        R<InsertResponse> res = client.insert(insertRowsParam);
+
+        if (res.getException() != null) {
+            System.out.println("Failed to insert: " + res.getException().getMessage());
             return;
         }
-        System.out.println("Collection " + collectionName + "created!");
+
+        System.out.println("Successfully inserted " + res.getData().getInsertCount() + " records");
     }
 
-    public void initOntology(OntModel ontology){
-
-    }
-/*
-这里是要仔细看的
- */
     public String insertData(ArrayList<String> data) throws Exception {
         OpenAI openAI = new OpenAI();
         for (int i = 0; i < data.size(); i++) {
@@ -169,6 +179,9 @@ public class Zilliz {
     }
 
     public void dropCollection(){
+        // TODO: store the data in a file
+
+
         DropCollectionParam dropCollectionParam = DropCollectionParam.newBuilder()
                 .withCollectionName(collectionName)
                 .build();
@@ -182,7 +195,7 @@ public class Zilliz {
     }
 
     public static void main(String[] args) throws Exception {
-        Zilliz db = new Zilliz("source");
-        db.dropCollection();
+        new Zilliz("source").dropCollection();
+        new Zilliz("target").dropCollection();
     }
 }

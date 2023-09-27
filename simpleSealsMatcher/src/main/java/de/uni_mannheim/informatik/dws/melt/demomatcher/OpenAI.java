@@ -23,7 +23,6 @@ import java.util.List;
 public class OpenAI {
     private static final String azureOpenaiKey = "3d172d13e1984f8ca5759838ea318a13";
     private static final String endpoint = "https://research-gpt-openai-canada-east.openai.azure.com/";
-    private static final String deploymentOrModelId = "gpt-4-32k";
 
     private static final OpenAIClient client = new OpenAIClientBuilder()
             .endpoint(endpoint)
@@ -44,9 +43,8 @@ public class OpenAI {
     }
 
     public List<Double> getEmbeddings(String prompt) {
-        String EmbeddingModel = "text-embedding-ada-002";
         EmbeddingsOptions embeddingsOptions = new EmbeddingsOptions(Arrays.asList(prompt));
-        Embeddings embeddings = client.getEmbeddings(EmbeddingModel, embeddingsOptions);
+        Embeddings embeddings = client.getEmbeddings("text-embedding-ada-002", embeddingsOptions);
         return embeddings.getData().get(0).getEmbedding();
     }
 
@@ -54,7 +52,7 @@ public class OpenAI {
         List<ChatMessage> chatMessages = new ArrayList<>();
         chatMessages.add(new ChatMessage(ChatRole.USER, prompt));
 
-        ChatCompletions chatCompletions = client.getChatCompletions(deploymentOrModelId, new ChatCompletionsOptions(chatMessages));
+        ChatCompletions chatCompletions = client.getChatCompletions("gpt-4", new ChatCompletionsOptions(chatMessages));
         String result = chatCompletions.getChoices().get(0).getMessage().getContent();
         System.out.println(result);
         return result;

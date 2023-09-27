@@ -1,10 +1,16 @@
 package de.uni_mannheim.informatik.dws.melt.demomatcher;
 
+import com.alibaba.fastjson.JSONObject;
 import de.uni_mannheim.informatik.dws.melt.yet_another_alignment_api.Correspondence;
 import org.apache.jena.ontology.OntClass;
 import org.apache.jena.ontology.OntModel;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 public class OntologyAgent {
@@ -13,13 +19,48 @@ public class OntologyAgent {
     private OpenAI ai;
     private Object JointKnowledgeBase;  // TODO: define later
     private boolean isFinished = false;
+    private String collectionName;
 
     public OntologyAgent(OntModel ontology, String collectionName){
         this.ontology = ontology;
+        this.collectionName = collectionName;
         this.ai = new OpenAI();
-        // TODO: fix below codes
-        this.db = new Zilliz(collectionName);
-        this.db.initOntology(ontology);
+        this.db = new Zilliz(collectionName).initCollection();
+        this.embeddingComponents(ontology);
+    }
+
+    private void embeddingComponents(OntModel ontology){
+        List<JSONObject> rows = new ArrayList<>();
+        int i = 0;
+        for (OntClass ontClass : ontology.listClasses().toList()) {
+            String info = "";
+            info += ontClass.getLocalName() +"\n";
+            info += ontClass.getLabel(null) +"\n";
+            info += ontClass.getComment(null);
+
+            JSONObject json_row = new JSONObject(1, true);
+            json_row.put("vector", ai.getEmbeddings(info));
+            json_row.put("uri", ontClass.getURI());
+
+            rows.add(json_row);
+            System.out.println(++i);
+        }
+
+        // write rows into local file
+        try {
+            FileWriter file = new FileWriter(collectionName + ".json");
+            for (JSONObject jsonObject : rows) {
+                file.write(jsonObject.toJSONString());
+                file.write("\n");
+
+            }
+            file.close();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        // store rows into database
+        db.insert(rows);
     }
 
     public boolean isFinished(){
