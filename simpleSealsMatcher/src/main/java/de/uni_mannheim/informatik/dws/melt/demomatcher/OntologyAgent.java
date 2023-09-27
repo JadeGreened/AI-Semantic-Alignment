@@ -9,17 +9,17 @@ import java.util.Set;
 
 public class OntologyAgent {
     private OntModel ontology;
-    private EmbeddingEngine entityEmbeddings;
-    private OpenAI gpt;
+    private Zilliz db;
+    private OpenAI ai;
     private Object JointKnowledgeBase;  // TODO: define later
     private boolean isFinished = false;
 
     public OntologyAgent(OntModel ontology){
         this.ontology = ontology;
-        this.gpt = new OpenAI();
+        this.ai = new OpenAI();
         // TODO: fix below codes
-//        this.entityEmbeddings = new EmbeddingServer();
-//        this.entityEmbeddings.initOntology(ontology);
+        this.db = new Zilliz();
+        this.db.initOntology(ontology);
     }
 
     public boolean isFinished(){
@@ -32,7 +32,7 @@ public class OntologyAgent {
      */
     public OntClass startNegotiation(){
         // TODO: return one entity that has not been negotiated
-        entityEmbeddings.getOneEntityNotNegotiated();
+        db.getOneEntityNotNegotiated();
         return null;
     }
 

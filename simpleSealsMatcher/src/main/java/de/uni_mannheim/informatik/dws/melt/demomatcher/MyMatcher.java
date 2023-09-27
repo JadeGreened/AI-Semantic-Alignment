@@ -12,27 +12,21 @@ import java.util.List;
 import java.util.Properties;
 
 public class MyMatcher extends MatcherYAAAJena {
-    private Zilliz sourceDatabase;
-    private Zilliz targetDatabase;
-    public MyMatcher(){
-        super();
-        sourceDatabase = new Zilliz("source");
-        targetDatabase = new Zilliz("target");
-    }
-
+    private OntologyAgent sourceAgent;
+    private OntologyAgent targetAgent;
     @Override
     public Alignment match(OntModel source, OntModel target, Alignment inputAlignment, Properties properties) throws Exception {
         // setup
+        setup(source, target);
+
         Alignment alignment = new Alignment();
-        OpenAI openAI = new OpenAI();
+        sourceDatabase = new Zilliz("source");
+        targetDatabase = new Zilliz("target");
 
         // 获取一个类
         ArrayList<String> sourceList = toArrayList(source);
         ArrayList<String> targetList = toArrayList(target);
 
-        // TODO: here are problems.
-        //  Failed to create collection: exceeded the limit number of collections per DB, maxCollectionNumPerDB={2}
-        sourceDatabase.initiatingDataBase();
         try {
             sourceDatabase.insertData(targetList);
         } catch (Exception e) {
@@ -58,7 +52,16 @@ public class MyMatcher extends MatcherYAAAJena {
                 }
             }
         }
+
+        sourceDatabase.dropCollection();
+        targetDatabase.dropCollection();
+
         return alignment;
+    }
+
+    private void setup(OntModel source, OntModel target){
+        this.sourceAgent = new OntologyAgent(source);
+        this.targetAgent = new OntologyAgent(target);
     }
 
     private String getURI(String data){
@@ -78,7 +81,6 @@ public class MyMatcher extends MatcherYAAAJena {
     如果你觉得不好的话可以改。
      */
     private ArrayList<String> toArrayList(OntModel ontology) {
-        print("=========================================");
         print("Start transfer ontology to ArrayList");
 
         ArrayList<String> list = new ArrayList<>();
@@ -127,7 +129,6 @@ public class MyMatcher extends MatcherYAAAJena {
                 }
                 list.add(info);
             }
-            print(ontClass.getURI());
         }
         return list;
     }

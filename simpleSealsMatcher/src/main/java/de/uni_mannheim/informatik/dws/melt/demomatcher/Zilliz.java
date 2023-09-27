@@ -26,7 +26,13 @@ import io.milvus.param.highlevel.dml.response.InsertResponse;
 import io.milvus.param.highlevel.dml.response.QueryResponse;
 import io.milvus.param.highlevel.dml.response.SearchResponse;
 import io.milvus.response.QueryResultsWrapper;
+import org.apache.jena.ontology.OntModel;
 import org.mapdb.Atomic;
+
+import io.milvus.param.R;
+import io.milvus.param.RpcStatus;
+
+import io.milvus.param.collection.DropCollectionParam;
 
 public class Zilliz {
     /*
@@ -44,16 +50,9 @@ public class Zilliz {
     private String collectionName;
     public Zilliz(String collectionName){
         this.collectionName = collectionName;
+        this.initiatingDataBase();
     }
-    public void initiatingDataBase(){
-        // 1. Connect to Zilliz Cloud
-        System.out.println("Connected to Zilliz Cloud!");
-
-
-//        CreateSimpleCollectionParam createCollectionParam = CreateSimpleCollectionParam.newBuilder()
-//                .withCollectionName("ontology")
-//                .withDimension(1536)
-//                .build();
+    private void initiatingDataBase(){
         // 2. Create collection
         FieldType id = FieldType.newBuilder()
                 .withName("id")
@@ -79,15 +78,17 @@ public class Zilliz {
                 .addFieldType(ontology)
                 .build();
 
-
         R<RpcStatus> collection = client.createCollection(createCollectionParam);
 
         if (collection.getException() != null) {
             System.out.println("Failed to create collection: " + collection.getException().getMessage());
             return;
         }
+        System.out.println("Collection " + collectionName + "created!");
+    }
 
-        System.out.println("Collection created!");
+    public void initOntology(OntModel ontology){
+
     }
 /*
 这里是要仔细看的
@@ -180,4 +181,8 @@ public class Zilliz {
         }
     }
 
+    public static void main(String[] args) throws Exception {
+        Zilliz db = new Zilliz("ontology");
+        db.dropCollection();
+    }
 }
