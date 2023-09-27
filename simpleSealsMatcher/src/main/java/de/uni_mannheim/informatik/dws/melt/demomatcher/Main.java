@@ -1,29 +1,20 @@
 package de.uni_mannheim.informatik.dws.melt.demomatcher;
 
-import de.uni_mannheim.informatik.dws.melt.matching_data.TestCase;
 import de.uni_mannheim.informatik.dws.melt.matching_data.TrackRepository;
 import de.uni_mannheim.informatik.dws.melt.matching_eval.ExecutionResultSet;
 import de.uni_mannheim.informatik.dws.melt.matching_eval.Executor;
 import de.uni_mannheim.informatik.dws.melt.matching_eval.evaluator.EvaluatorCSV;
-import de.uni_mannheim.informatik.dws.melt.matching_jena.MatcherYAAAJena;
 import de.uni_mannheim.informatik.dws.melt.yet_another_alignment_api.AlignmentParser;
-import de.uni_mannheim.informatik.dws.melt.yet_another_alignment_api.AlignmentSerializer;
 import org.apache.jena.ontology.*;
 import org.apache.jena.rdf.model.ModelFactory;
 
 import java.io.IOException;
-import java.util.List;
-import java.util.Properties;
 
 import de.uni_mannheim.informatik.dws.melt.yet_another_alignment_api.Alignment;
 import org.apache.jena.ontology.OntModel;
-import org.apache.jena.rdf.model.Statement;
-import org.apache.jena.rdf.model.StmtIterator;
 import org.xml.sax.SAXException;
 
-import java.util.*;
-
-public class Test {
+public class Main {
     public static void main(String[] args) {
         runMatcherWithLocalData();
 //        testOntModelProperties();
