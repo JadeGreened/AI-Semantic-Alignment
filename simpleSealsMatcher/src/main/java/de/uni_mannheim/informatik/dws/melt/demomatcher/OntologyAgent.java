@@ -10,13 +10,13 @@ import java.util.Set;
 public class OntologyAgent {
     private OntModel ontology;
     private EmbeddingEngine entityEmbeddings;
-    private ChatGPT gpt;
+    private OpenAI gpt;
     private Object JointKnowledgeBase;  // TODO: define later
     private boolean isFinished = false;
 
     public OntologyAgent(OntModel ontology){
         this.ontology = ontology;
-        this.gpt = new ChatGPT();
+        this.gpt = new OpenAI();
         // TODO: fix below codes
 //        this.entityEmbeddings = new EmbeddingServer();
 //        this.entityEmbeddings.initOntology(ontology);
