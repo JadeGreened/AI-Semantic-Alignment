@@ -1,12 +1,5 @@
 package de.uni_mannheim.informatik.dws.melt.demomatcher;
 
-import de.uni_mannheim.informatik.dws.melt.matching_jena.MatcherPipelineYAAAJena;
-import de.uni_mannheim.informatik.dws.melt.matching_jena_matchers.elementlevel.ExactStringMatcher;
-import de.uni_mannheim.informatik.dws.melt.matching_jena_matchers.external.matcher.BackgroundMatcher;
-import de.uni_mannheim.informatik.dws.melt.matching_jena_matchers.external.matcher.ImplementedBackgroundMatchingStrategies;
-import de.uni_mannheim.informatik.dws.melt.matching_jena_matchers.external.wordNet.WordNetKnowledgeSource;
-import io.metaloom.qdrant.client.http.impl.HttpErrorException;
-
 import de.uni_mannheim.informatik.dws.melt.matching_data.TrackRepository;
 import de.uni_mannheim.informatik.dws.melt.matching_eval.ExecutionResultSet;
 import de.uni_mannheim.informatik.dws.melt.matching_eval.Executor;
@@ -15,24 +8,15 @@ import de.uni_mannheim.informatik.dws.melt.matching_jena.MatcherYAAAJena;
 import org.apache.jena.ontology.*;
 import org.apache.jena.rdf.model.ModelFactory;
 
-import java.net.URI;
 import java.util.List;
 import java.util.Properties;
 
-import de.uni_mannheim.informatik.dws.melt.matching_jena_matchers.external.matcher.SimpleStringMatcher;
 import de.uni_mannheim.informatik.dws.melt.yet_another_alignment_api.Alignment;
 import org.apache.jena.ontology.OntModel;
-import org.apache.jena.ontology.OntResource;
-import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.rdf.model.StmtIterator;
-import org.apache.zookeeper.Op;
 
-import java.nio.file.*;
-import java.nio.charset.StandardCharsets;
 import java.util.*;
-import java.util.regex.*;
-import java.io.*;
 
 public class Test {
 
@@ -110,7 +94,6 @@ public class Test {
             }
         }
 
-
         @Override
         public Alignment match(OntModel ontModel, OntModel ontModel1, Alignment alignment, Properties properties) throws Exception {
             OpenAI openAI = new OpenAI();
@@ -167,7 +150,11 @@ public class Test {
     }
 
     public static void main(String[] args) {
+        testOntModelProperties();
+//        runMatcher();
+    }
 
+    private static void runMatcher(){
         // let's initialize our matcher
         GPTAlignment myMatcher = new GPTAlignment();
 
@@ -178,6 +165,47 @@ public class Test {
         // does not exist).
         EvaluatorCSV evaluatorCSV = new EvaluatorCSV(ers);
         evaluatorCSV.writeToDirectory();
+    }
+
+    private static void testOntModelProperties(){
+        OntModel source = ModelFactory.createOntologyModel(OntModelSpec.OWL_DL_MEM);
+        source.read("/Users/shiyaozhang/Developer/AI-Semantic-Alignment/simpleSealsMatcher/src/main/java/DataSet/human.owl");
+        OntClass var = source.listClasses().next();
+        print("var==================");
+        print(var.getLabel(null));
+        print(var.getURI());
+        print(var.getLocalName());
+        print(var.getComment(null));
+        print(var.getNameSpace());
+        print(var.getVersionInfo());
+        if (var.getEquivalentClass() != null){
+            print("equivalent class ================");
+            print(var.getEquivalentClass().getURI());
+            print(var.getEquivalentClass().getLocalName());
+            print(var.getEquivalentClass().getLabel(null));
+            print(var.getEquivalentClass().getComment(null));
+        }
+        if(var.getSubClass() != null){
+            print("subclass========================");
+            print(var.getSubClass().getURI());
+            print(var.getSubClass().getLocalName());
+            print(var.getSubClass().getLabel(null));
+            print(var.getSubClass().getComment(null));
+        }
+        if(var.getSuperClass() != null){
+            print("superclass========================");
+            print(var.getSuperClass().getURI());
+            print(var.getSuperClass().getLocalName());
+            print(var.getSuperClass().getLabel(null));
+            print(var.getSuperClass().getComment(null));
+        }
+
+        print(var.getSameAs() == null ? "null" : var.getSameAs().toString());
+        print(var.getDisjointWith() == null ? "null" : var.getDisjointWith().toString());
+    }
+
+    private static void print(String s){
+        System.out.println(s);
     }
 }
 
