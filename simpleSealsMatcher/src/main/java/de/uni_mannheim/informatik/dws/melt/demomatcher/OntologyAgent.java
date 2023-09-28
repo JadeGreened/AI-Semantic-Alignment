@@ -5,7 +5,6 @@ import de.uni_mannheim.informatik.dws.melt.yet_another_alignment_api.Corresponde
 import org.apache.jena.ontology.OntClass;
 import org.apache.jena.ontology.OntModel;
 
-import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -33,12 +32,17 @@ public class OntologyAgent {
         List<JSONObject> rows = new ArrayList<>();
         int i = 0;
         for (OntClass ontClass : ontology.listClasses().toList()) {
+            if (ontClass.getURI() == null){
+                continue;
+            }
+
             String info = "";
             info += ontClass.getLocalName() +"\n";
             info += ontClass.getLabel(null) +"\n";
             info += ontClass.getComment(null);
 
             JSONObject json_row = new JSONObject(1, true);
+
             json_row.put("vector", ai.getEmbeddings(info));
             json_row.put("uri", ontClass.getURI());
 

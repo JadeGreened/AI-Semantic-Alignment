@@ -11,26 +11,15 @@ import com.alibaba.fastjson.JSONObject;
 
 import io.milvus.client.MilvusServiceClient;
 import io.milvus.grpc.DataType;
-import io.milvus.grpc.DescribeCollectionResponse;
-import io.milvus.grpc.FlushAllResponse;
-import io.milvus.grpc.FlushResponse;
 import io.milvus.param.ConnectParam;
 import io.milvus.param.R;
 import io.milvus.param.RpcStatus;
 import io.milvus.param.collection.*;
-import io.milvus.param.highlevel.collection.CreateSimpleCollectionParam;
 import io.milvus.param.highlevel.dml.InsertRowsParam;
-import io.milvus.param.highlevel.dml.QuerySimpleParam;
 import io.milvus.param.highlevel.dml.SearchSimpleParam;
 import io.milvus.param.highlevel.dml.response.InsertResponse;
-import io.milvus.param.highlevel.dml.response.QueryResponse;
 import io.milvus.param.highlevel.dml.response.SearchResponse;
 import io.milvus.response.QueryResultsWrapper;
-import org.apache.jena.ontology.OntModel;
-import org.mapdb.Atomic;
-
-import io.milvus.param.R;
-import io.milvus.param.RpcStatus;
 
 import io.milvus.param.collection.DropCollectionParam;
 
@@ -62,10 +51,10 @@ public class Zilliz {
         FieldType title_vector = FieldType.newBuilder()
                 .withName("vector")
                 .withDataType(DataType.FloatVector)
-                .withDimension(768)
+                .withDimension(1536)
                 .build();
-        FieldType ontology = FieldType.newBuilder()
-                .withName("ontology")
+        FieldType uri = FieldType.newBuilder()
+                .withName("uri")
                 .withDataType(DataType.VarChar)
                 .withMaxLength(512)
                 .build();
@@ -74,7 +63,7 @@ public class Zilliz {
                 .withDescription("Schema of source ontology")
                 .addFieldType(id)
                 .addFieldType(title_vector)
-                .addFieldType(ontology)
+                .addFieldType(uri)
                 .build();
 
         R<RpcStatus> collection = client.createCollection(createCollectionParam);
@@ -87,6 +76,10 @@ public class Zilliz {
         return this;
     }
 
+    /***
+     * Float vector field's value type must be List<Float>
+     * @param rows
+     */
     public void insert(List<JSONObject> rows){
         InsertRowsParam insertRowsParam = InsertRowsParam.newBuilder()
                 .withCollectionName(collectionName)
@@ -109,7 +102,7 @@ public class Zilliz {
             String json = "{\n" +
                     "    \"id\": \"%s\",\n" +
                     "    \"vector\": [%s],\n" +
-                    "    \"ontology\": \"%s\"\n" +
+                    "    \"uri\": \"%s\"\n" +
                     "}";
             String Json = String.format(json, i, openAI.getEmbeddings(data.get(i)), data.get(i));
             JSONObject dataset = JSON.parseObject(Json);
@@ -130,16 +123,16 @@ public class Zilliz {
     public List<String> query(String ontology){
         List<String> result = new ArrayList<>();
         OpenAI openAI = new OpenAI();
-        List<Double> embedding = openAI.getEmbeddings(ontology);
+        List<Float> embedding = openAI.getEmbeddings(ontology);
         // Change the second argument of the `getRows` function
         // to limit the number of rows obtained from the dataset.
 
         // 5. search
-        List<List<Double>> queryVectors = new ArrayList<>();
+        List<List<Float>> queryVectors = new ArrayList<>();
         queryVectors.add(embedding);
 
         List<String> outputFields = new ArrayList<>();
-        outputFields.add("ontology");
+        outputFields.add("uri");
         SearchSimpleParam searchSimpleParam = SearchSimpleParam.newBuilder()
                 .withCollectionName(collectionName)
                 .withVectors(queryVectors)
@@ -156,7 +149,7 @@ public class Zilliz {
         }
 
         for (QueryResultsWrapper.RowRecord rowRecord: searchRes.getData().getRowRecords()) {
-            result.add(rowRecord.get("ontology").toString());
+            result.add(rowRecord.get("uri").toString());
         }
         return result;
     }
@@ -169,10 +162,10 @@ public class Zilliz {
 
             int id = original_row.getIntValue("id");
             List<Float> vectors = original_row.getJSONArray("vector").toJavaList(Float.class);
-            String ontology = original_row.getString("ontology");
+            String uri = original_row.getString("uri");
             json_row.put("id", id);
             json_row.put("vector", vectors);
-            json_row.put("ontology", ontology);
+            json_row.put("uri", uri);
             rows.add(json_row);
         }
         return rows;

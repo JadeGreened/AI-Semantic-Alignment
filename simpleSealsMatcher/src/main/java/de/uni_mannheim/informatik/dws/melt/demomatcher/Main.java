@@ -1,5 +1,8 @@
 package de.uni_mannheim.informatik.dws.melt.demomatcher;
 
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.JSONReader;
 import de.uni_mannheim.informatik.dws.melt.matching_data.TrackRepository;
 import de.uni_mannheim.informatik.dws.melt.matching_eval.ExecutionResultSet;
 import de.uni_mannheim.informatik.dws.melt.matching_eval.Executor;
@@ -8,8 +11,10 @@ import de.uni_mannheim.informatik.dws.melt.yet_another_alignment_api.AlignmentPa
 import org.apache.jena.ontology.*;
 import org.apache.jena.rdf.model.ModelFactory;
 
-import java.io.FileWriter;
+import java.io.FileReader;
 import java.io.IOException;
+import java.math.BigDecimal;
+import java.util.ArrayList;
 
 import de.uni_mannheim.informatik.dws.melt.yet_another_alignment_api.Alignment;
 import org.apache.jena.ontology.OntModel;
@@ -17,9 +22,34 @@ import org.xml.sax.SAXException;
 
 public class Main {
     public static void main(String[] args) throws IOException {
+//        uploadEmbeddingsFromFile("target.json", "target");
+
+
         runMatcherWithLocalData();
 //        testOntModelProperties();
 //        testMatcherOnline();
+    }
+
+    private static void uploadEmbeddingsFromFile(String fileName, String collectionName) throws IOException {
+        FileReader fileReader = new FileReader(fileName);
+        JSONReader jsonReader = new JSONReader(fileReader);
+
+        ArrayList<JSONObject> rows = new ArrayList<>();
+        while(fileReader.ready()){
+            JSONObject var = jsonReader.readObject(JSONObject.class);
+            if (var.get("uri") == null){
+                continue;
+            }
+            ArrayList<Float> vector = new ArrayList<>();
+            for (Object bigDecimal : (JSONArray) var.get("vector")) {
+                vector.add(((BigDecimal) bigDecimal).floatValue());
+            }
+            var.put("vector", vector);
+            rows.add(var);
+        }
+
+        Zilliz db = new Zilliz(collectionName).initCollection();
+        db.insert(rows);
     }
 
     /***
