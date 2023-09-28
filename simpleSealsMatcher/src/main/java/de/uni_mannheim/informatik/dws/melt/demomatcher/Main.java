@@ -8,6 +8,7 @@ import de.uni_mannheim.informatik.dws.melt.yet_another_alignment_api.AlignmentPa
 import org.apache.jena.ontology.*;
 import org.apache.jena.rdf.model.ModelFactory;
 
+import java.io.FileWriter;
 import java.io.IOException;
 
 import de.uni_mannheim.informatik.dws.melt.yet_another_alignment_api.Alignment;
@@ -15,7 +16,7 @@ import org.apache.jena.ontology.OntModel;
 import org.xml.sax.SAXException;
 
 public class Main {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         runMatcherWithLocalData();
 //        testOntModelProperties();
 //        testMatcherOnline();
@@ -32,11 +33,11 @@ public class Main {
         // for windows
 //        source.read("D:\\WorkSpace\\projects\\sealsproj\\simpleSealsMatcher\\src\\main\\java\\DataSet\\human.owl");
 //        target.read("D:\\WorkSpace\\projects\\sealsproj\\simpleSealsMatcher\\src\\main\\java\\DataSet\\mouse.owl");
-        // for mac
-        source.read("/Users/shiyaozhang/Developer/AI-Semantic-Alignment/simpleSealsMatcher/src/main/java/DataSet/human.owl");
-        target.read("/Users/shiyaozhang/Developer/AI-Semantic-Alignment/simpleSealsMatcher/src/main/java/DataSet/mouse.owl");
+        // for shiyao
+        source.read("C:\\Users\\zhang\\Documents\\Repo\\AI-Semantic-Alignment\\simpleSealsMatcher\\src\\main\\java\\DataSet\\human.owl");
+        target.read("C:\\Users\\zhang\\Documents\\Repo\\AI-Semantic-Alignment\\simpleSealsMatcher\\src\\main\\java\\DataSet\\mouse.owl");
         try {
-            reference = AlignmentParser.parse("/Users/shiyaozhang/Developer/AI-Semantic-Alignment/simpleSealsMatcher/src/main/java/DataSet/reference.rdf");
+            reference = AlignmentParser.parse("C:\\Users\\zhang\\Documents\\Repo\\AI-Semantic-Alignment\\simpleSealsMatcher\\src\\main\\java\\DataSet\\reference.rdf");
         } catch (SAXException e) {
             throw new RuntimeException(e);
         } catch (IOException e) {

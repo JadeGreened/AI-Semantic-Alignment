@@ -60,6 +60,8 @@ public class OntologyAgent {
         }
 
         // store rows into database
+        // TODO: Exception in thread "main" java.lang.RuntimeException: io.milvus.exception.ParamException:
+        //  Field value cannot be empty. If the field is auto-id, just ignore it from withRows()
         db.insert(rows);
     }
 

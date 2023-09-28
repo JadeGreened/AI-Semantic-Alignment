@@ -56,8 +56,8 @@ public class MyMatcher extends MatcherYAAAJena {
     }
 
     private void setup(OntModel source, OntModel target){
-        this.sourceAgent = new OntologyAgent(source, "source");
         this.targetAgent = new OntologyAgent(target, "target");
+        this.sourceAgent = new OntologyAgent(source, "source");
     }
 
     private void clean(){
