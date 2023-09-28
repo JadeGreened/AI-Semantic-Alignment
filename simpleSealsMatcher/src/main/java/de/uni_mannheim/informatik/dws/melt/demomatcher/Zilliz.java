@@ -40,6 +40,7 @@ public class Zilliz {
     public Zilliz(String collectionName){
         this.collectionName = collectionName;
     }
+
     public Zilliz initCollection(){
         // 2. Create collection
         FieldType id = FieldType.newBuilder()
@@ -120,6 +121,7 @@ public class Zilliz {
         }
         return "success";
     }
+
     public List<String> query(String ontology){
         List<String> result = new ArrayList<>();
         OpenAI openAI = new OpenAI();

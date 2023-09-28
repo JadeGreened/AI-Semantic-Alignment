@@ -2,6 +2,7 @@ package de.uni_mannheim.informatik.dws.melt.demomatcher;
 
 import de.uni_mannheim.informatik.dws.melt.matching_jena.MatcherYAAAJena;
 import de.uni_mannheim.informatik.dws.melt.yet_another_alignment_api.Alignment;
+import de.uni_mannheim.informatik.dws.melt.yet_another_alignment_api.Correspondence;
 import org.apache.jena.ontology.OntClass;
 import org.apache.jena.ontology.OntModel;
 import org.apache.jena.rdf.model.Statement;
@@ -10,26 +11,56 @@ import org.apache.jena.rdf.model.StmtIterator;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
+import java.util.Set;
 
 public class MyMatcher extends MatcherYAAAJena {
     private OntologyAgent sourceAgent;
     private OntologyAgent targetAgent;
     @Override
     public Alignment match(OntModel source, OntModel target, Alignment inputAlignment, Properties properties) throws Exception {
-        // setup
+        // setup agents, embeddings, database, and openAI
         setup(source, target);
 
         Alignment alignment = new Alignment();
 
-        // 获取一个类
-        ArrayList<String> sourceList = toArrayList(source);
-        ArrayList<String> targetList = toArrayList(target);
-
-        try {
-//            sourceDatabase.insertData(targetList);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
+        // start alignment
+        // if there is at least one agent has unaligned components
+        while (!sourceAgent.isFinished() || !targetAgent.isFinished()){
+            // if source agent has unaligned components
+            if (!sourceAgent.isFinished()) {
+                Correspondence correspondence = startNegotiationForOneEntity(sourceAgent, targetAgent);
+                if (correspondence != null){
+                    alignment.add(correspondence);
+                }
+            }
+            // if target agent has unaligned components
+            if (!targetAgent.isFinished()) {
+                Correspondence correspondence = startNegotiationForOneEntity(sourceAgent, targetAgent);
+                if (correspondence != null){
+                    alignment.add(correspondence);
+                }
+            }
         }
+
+        // clean database
+        clean();
+
+        return alignment;
+
+
+
+
+//        Alignment alignment = new Alignment();
+//
+//        // 获取一个类
+//        ArrayList<String> sourceList = toArrayList(source);
+//        ArrayList<String> targetList = toArrayList(target);
+//
+//        try {
+////            sourceDatabase.insertData(targetList);
+//        } catch (Exception e) {
+//            throw new RuntimeException(e);
+//        }
             /*
             这里还是按照原来的算法来的，
             先语义搜索到相似的class，然后再进行对齐，如果我们的整个模型测出来的效果不好的话，可以用暴力遍历。
@@ -50,15 +81,50 @@ public class MyMatcher extends MatcherYAAAJena {
 //                }
 //            }
 //        }
-        clean();
 
-        return alignment;
+//        return alignment;
     }
 
+    /***
+     * setup agents, embeddings, database, and openAI
+     * @param source source ontology
+     * @param target target ontology
+     */
     private void setup(OntModel source, OntModel target){
         this.targetAgent = new OntologyAgent(target, "target");
         this.sourceAgent = new OntologyAgent(source, "source");
     }
+
+    /***
+     * Start negotiation.
+     * Source agent pick one unaligned entity, target agent find potential alignment.
+     * If there are potential alignments, source and target agent discuss which one is the best in turn,
+     * with proposing new suitable components.
+     * @param source source agent
+     * @param target target agent
+     * @return The agreed correspondence.
+     */
+    private Correspondence startNegotiationForOneEntity(OntologyAgent source, OntologyAgent target) {
+        // source agent pick one unaligned entity
+        OntClass entity = source.startNegotiation();
+        if (entity == null){
+            source.Finish();
+            return null;
+        }
+
+        // target agent find potential alignment
+        Set<PotentialCorrespondence> potentialCorrespondences = target.receiveNegotiation(entity);
+        if (potentialCorrespondences == null){
+            return null;
+        }
+
+        // TODO: agents negotiate on the potential correspondences, and return the final correspondence
+
+        // TODO: during the discussion, there would be components pairs discussed. Store the agreed result in the database.
+
+        return null;    // TODO: return the agreed correspondence
+    }
+
 
     private void clean(){
         this.sourceAgent.clean();
