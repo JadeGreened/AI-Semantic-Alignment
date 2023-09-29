@@ -3,11 +3,19 @@ package de.uni_mannheim.informatik.dws.melt.demomatcher;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.JSONReader;
+import com.google.gson.GsonBuilder;
 import de.uni_mannheim.informatik.dws.melt.matching_data.TrackRepository;
 import de.uni_mannheim.informatik.dws.melt.matching_eval.ExecutionResultSet;
 import de.uni_mannheim.informatik.dws.melt.matching_eval.Executor;
 import de.uni_mannheim.informatik.dws.melt.matching_eval.evaluator.EvaluatorCSV;
 import de.uni_mannheim.informatik.dws.melt.yet_another_alignment_api.AlignmentParser;
+import io.weaviate.client.base.Result;
+import io.weaviate.client.v1.data.model.WeaviateObject;
+import io.weaviate.client.v1.filters.Operator;
+import io.weaviate.client.v1.filters.WhereFilter;
+import io.weaviate.client.v1.graphql.model.GraphQLResponse;
+import io.weaviate.client.v1.graphql.query.fields.Field;
+import io.weaviate.client.v1.schema.model.WeaviateClass;
 import org.apache.jena.ontology.*;
 import org.apache.jena.rdf.model.ModelFactory;
 
@@ -15,6 +23,8 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 import de.uni_mannheim.informatik.dws.melt.yet_another_alignment_api.Alignment;
 import org.apache.jena.ontology.OntModel;
@@ -24,6 +34,8 @@ public class Main {
     public static void main(String[] args) throws IOException {
 //        uploadEmbeddingsFromFile("target.json", "target");
 //        uploadEmbeddingsFromFile("source.json", "source");
+//        uploadEmbeddingsFromFileToWeaviate("source.json", "source");
+//        uploadEmbeddingsFromFileToWeaviate("target.json", "target");
 
 //        runMatcherWithLocalData();
 
@@ -118,12 +130,48 @@ public class Main {
                 vector.add(((BigDecimal) bigDecimal).floatValue());
             }
             var.put("vector", vector);
-            var.put("isNegotiated", false);
             rows.add(var);
         }
 
         Zilliz db = new Zilliz(collectionName).initCollection();
         db.insert(rows);
+    }
+
+    private static void uploadEmbeddingsFromFileToWeaviate(String fileName, String collectionName) throws IOException {
+        FileReader fileReader = new FileReader(fileName);
+        JSONReader jsonReader = new JSONReader(fileReader);
+
+        Weaviate db = new Weaviate();
+
+//        ArrayList<JSONObject> rows = new ArrayList<>();
+        while(fileReader.ready()){
+            JSONObject var = jsonReader.readObject(JSONObject.class);
+            if (var.get("uri") == null){
+                continue;
+            }
+            ArrayList<Float> vector = new ArrayList<>();
+            for (Object bigDecimal : (JSONArray) var.get("vector")) {
+                vector.add(((BigDecimal) bigDecimal).floatValue());
+            }
+//            var.put("vector", vector);
+
+            Result<WeaviateObject> result = db.client.data().creator()
+                    .withClassName("source")
+                    .withVector(vector.toArray(new Float[0]))
+                    .withProperties(new HashMap<String, Object>() {{
+                        put("uri", var.get("uri"));
+                        put("isNegotiated", var.get("isNegotiated")); // will be automatically added as a number property
+                    }})
+                    .run();
+
+// the returned value is the object
+            String json = new GsonBuilder().setPrettyPrinting().create().toJson(result.getResult());
+            System.out.println(json);
+//            rows.add(var);
+        }
+
+//        Zilliz db = new Zilliz(collectionName).initCollection();
+//        db.insert(rows);
     }
 
     /***

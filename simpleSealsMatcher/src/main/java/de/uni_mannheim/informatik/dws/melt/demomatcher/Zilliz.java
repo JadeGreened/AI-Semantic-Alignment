@@ -1,7 +1,5 @@
 package de.uni_mannheim.informatik.dws.melt.demomatcher;
 
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,6 +20,9 @@ import io.milvus.param.highlevel.dml.response.SearchResponse;
 import io.milvus.response.QueryResultsWrapper;
 
 import io.milvus.param.collection.DropCollectionParam;
+
+import io.milvus.param.highlevel.dml.QuerySimpleParam;
+import io.milvus.param.highlevel.dml.response.QueryResponse;
 
 public class Zilliz {
     /*
@@ -71,6 +72,7 @@ public class Zilliz {
                 .addFieldType(id)
                 .addFieldType(title_vector)
                 .addFieldType(uri)
+                .addFieldType(isNegotiated)
                 .build();
 
         R<RpcStatus> collection = client.createCollection(createCollectionParam);
@@ -195,9 +197,39 @@ public class Zilliz {
         }
     }
 
+    public void getOneEntityNotNegotiated() {
+        List<String> outputFields = new ArrayList<>();
+        outputFields.add("vector");
+        outputFields.add("uri");
+        outputFields.add("isNegotiated");
+
+        QuerySimpleParam querySimpleParam = QuerySimpleParam.newBuilder()
+                .withCollectionName(collectionName)
+                .withFilter("isNegotiated == false")
+                .withOutputFields(outputFields)
+                .withOffset(0L)
+                .withLimit(1L)
+                .build();
+
+        R<QueryResponse> queryRes = client.query(querySimpleParam);
+
+        if (queryRes.getException() != null) {
+            System.out.println("Failed to query: " + queryRes.getException().getMessage());
+            return;
+        }
+
+        for (QueryResultsWrapper.RowRecord rowRecord: queryRes.getData().getRowRecords()) {
+            System.out.println(rowRecord);
+            System.out.println(rowRecord.getClass());
+        }
+    }
+
+    public void getSimilarEntities(String embedding, int topK) {
+    }
+
     public static void main(String[] args) throws Exception {
 //        new Zilliz("source").dropCollection();
-//        new Zilliz("target").dropCollection();
-        new Zilliz("test").dropCollection();
+        new Zilliz("target").dropCollection();
+//        new Zilliz("test").dropCollection();
     }
 }

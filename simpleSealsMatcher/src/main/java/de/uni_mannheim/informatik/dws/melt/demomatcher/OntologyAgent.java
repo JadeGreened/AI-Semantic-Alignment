@@ -14,7 +14,8 @@ import java.util.Set;
 
 public class OntologyAgent {
     private OntModel ontology;
-    private Zilliz db;
+//    private Zilliz db;
+    private Weaviate db;
     private OpenAI ai;
     private Object JointKnowledgeBase;  // TODO: define later
     private boolean isFinished = false;
@@ -24,53 +25,56 @@ public class OntologyAgent {
         this.ontology = ontology;
         this.collectionName = collectionName;
         this.ai = new OpenAI();
-        this.db = new Zilliz(collectionName).initCollection();
-        if (conductEmbedding){
-            this.embeddingComponents(ontology);
-        }
+//        this.db = new Zilliz(collectionName);
+//        this.db.initCollection();
+        this.db = new Weaviate(collectionName);
+
+//        if (conductEmbedding){
+//            this.embeddingComponents(ontology);
+//        }
     }
 
-    private void embeddingComponents(OntModel ontology){
-        List<JSONObject> rows = new ArrayList<>();
-        int i = 0;
-        for (OntClass ontClass : ontology.listClasses().toList()) {
-            if (ontClass.getURI() == null){
-                continue;
-            }
-
-            String info = "";
-            info += ontClass.getLocalName() +"\n";
-            info += ontClass.getLabel(null) +"\n";
-            info += ontClass.getComment(null);
-
-            JSONObject json_row = new JSONObject(1, true);
-
-            json_row.put("vector", ai.getEmbeddings(info));
-            json_row.put("uri", ontClass.getURI());
-            json_row.put("isNegotiated", false);
-
-            rows.add(json_row);
-            System.out.println(++i);
-        }
-
-        // write rows into local file
-        try {
-            FileWriter file = new FileWriter(collectionName + ".json");
-            for (JSONObject jsonObject : rows) {
-                file.write(jsonObject.toJSONString());
-                file.write("\n");
-
-            }
-            file.close();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-
-        // store rows into database
-        // TODO: Exception in thread "main" java.lang.RuntimeException: io.milvus.exception.ParamException:
-        //  Field value cannot be empty. If the field is auto-id, just ignore it from withRows()
-        db.insert(rows);
-    }
+//    private void embeddingComponents(OntModel ontology){
+//        List<JSONObject> rows = new ArrayList<>();
+//        int i = 0;
+//        for (OntClass ontClass : ontology.listClasses().toList()) {
+//            if (ontClass.getURI() == null){
+//                continue;
+//            }
+//
+//            String info = "";
+//            info += ontClass.getLocalName() +"\n";
+//            info += ontClass.getLabel(null) +"\n";
+//            info += ontClass.getComment(null);
+//
+//            JSONObject json_row = new JSONObject(1, true);
+//
+//            json_row.put("vector", ai.getEmbeddings(info));
+//            json_row.put("uri", ontClass.getURI());
+//            json_row.put("isNegotiated", false);
+//
+//            rows.add(json_row);
+//            System.out.println(++i);
+//        }
+//
+//        // write rows into local file
+//        try {
+//            FileWriter file = new FileWriter(collectionName + ".json");
+//            for (JSONObject jsonObject : rows) {
+//                file.write(jsonObject.toJSONString());
+//                file.write("\n");
+//
+//            }
+//            file.close();
+//        } catch (IOException e) {
+//            throw new RuntimeException(e);
+//        }
+//
+//        // store rows into database
+//        // TODO: Exception in thread "main" java.lang.RuntimeException: io.milvus.exception.ParamException:
+//        //  Field value cannot be empty. If the field is auto-id, just ignore it from withRows()
+//        db.insert(rows);
+//    }
 
     public boolean isFinished(){
         return isFinished;
@@ -81,9 +85,11 @@ public class OntologyAgent {
      * @return the entity for this round of negotiation. null if all entities have been negotiated.
      */
     public OntClass startNegotiation(){
-        // TODO: return one entity that has not been negotiated
-//        db.getOneEntityNotNegotiated();
-        return null;
+        String uri = db.getUriForNotNegotiated();
+        if (uri.isEmpty()){
+            return null;
+        }
+        return ontology.getOntClass(uri);
     }
 
     /***
@@ -132,7 +138,7 @@ public class OntologyAgent {
     }
 
     public void clean(){
-        this.db.dropCollection();
+//        this.db.dropCollection();
     }
 
 // region private methods for negotiation
