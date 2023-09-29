@@ -38,8 +38,10 @@ public class OpenAI {
         String input = String.format(prompt, ontologies);
         String thought = think(input);
 
-        // TODO: check if the thought is yes or no
-
+        // check if the thought is yes or no
+        if (thought.toLowerCase().contains("yes")){
+            return true;
+        }
         return false;
     }
 

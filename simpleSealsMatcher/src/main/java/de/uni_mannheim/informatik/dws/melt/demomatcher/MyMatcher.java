@@ -127,10 +127,32 @@ public class MyMatcher extends MatcherYAAAJena {
             return null;
         }
 
-        // TODO: agents negotiate on the potential correspondences, and return the final correspondence
+        // agents negotiate on the potential correspondences, and return the final correspondence
+        while (potentialCorrespondences.size() > 1){
+            // source agent validate correspondences and propose new correspondences
+            potentialCorrespondences = source.furtherNegotiation(entity, potentialCorrespondences);
+            if (potentialCorrespondences == null){
+                return null;
+            }
+            if (potentialCorrespondences.size() <= 1){
+                break;
+            }
+            // target agent validate correspondences and propose new correspondences
+            potentialCorrespondences = target.furtherNegotiation(entity, potentialCorrespondences);
+            if (potentialCorrespondences == null){
+                return null;
+            }
+        }
 
         // TODO: during the discussion, there would be components pairs discussed. Store the agreed result in the database.
 
+        if (potentialCorrespondences.size() == 1) {
+            for (PotentialCorrespondence potentialCorrespondence : potentialCorrespondences) {
+                source.endNegotiation(potentialCorrespondence);
+                target.endNegotiation(potentialCorrespondence);
+                return new Correspondence(potentialCorrespondence.getSource().getURI(), potentialCorrespondence.getTarget().getURI(), 1, potentialCorrespondence.getRelation());
+            }
+        }
         return null;    // TODO: return the agreed correspondence
     }
 
