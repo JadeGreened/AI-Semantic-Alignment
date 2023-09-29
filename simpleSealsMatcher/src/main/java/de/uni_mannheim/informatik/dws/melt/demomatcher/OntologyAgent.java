@@ -2,6 +2,7 @@ package de.uni_mannheim.informatik.dws.melt.demomatcher;
 
 import com.alibaba.fastjson.JSONObject;
 import de.uni_mannheim.informatik.dws.melt.yet_another_alignment_api.Correspondence;
+import de.uni_mannheim.informatik.dws.melt.yet_another_alignment_api.CorrespondenceRelation;
 import org.apache.jena.ontology.OntClass;
 import org.apache.jena.ontology.OntModel;
 
@@ -14,12 +15,12 @@ import java.util.Set;
 
 public class OntologyAgent {
     private OntModel ontology;
-//    private Zilliz db;
     private Weaviate db;
     private OpenAI ai;
     private Object JointKnowledgeBase;  // TODO: define later
     private boolean isFinished = false;
     private String collectionName;
+    private static final double SIMILARITY_THRESHOLD = 0.95;
 
     public OntologyAgent(OntModel ontology, String collectionName, boolean conductEmbedding){
         this.ontology = ontology;
@@ -92,17 +93,23 @@ public class OntologyAgent {
         return ontology.getOntClass(uri);
     }
 
+    public ArrayList<Double> getEmbedding(OntClass entity){
+        String uri = entity.getURI();
+        return db.getEmbedding(uri);
+    }
+
     /***
      * Receive the entity from the other agent, and find all entities that are relevant to the given entity
      * @param entity the given entity
      * @return the set of all entities that are relevant to the given entity. null if no relevant entities.
      */
-    public Set<PotentialCorrespondence> receiveNegotiation(OntClass entity) {
-        // TODO: register received entity to the Joint Knowledge Base
-        Set<OntClass> relevantEntities = findAllRelevantEntities(entity);
-        if (relevantEntities.isEmpty()){
+    public Set<PotentialCorrespondence> receiveNegotiation(OntClass entity, ArrayList<Double> embedding) {
+        Set<OntClass> relevantEntities = findAllRelevantEntities(embedding);
+        if (relevantEntities == null){
             return null;
         }
+        // TODO: register received entity to the Joint Knowledge Base
+
         Set<PotentialCorrespondence> potentialCorrespondences = examineRelevantEntities(entity, relevantEntities);
         //TODO: register the correspondences to the Joint Knowledge Base
         return potentialCorrespondences;
@@ -144,12 +151,22 @@ public class OntologyAgent {
 // region private methods for negotiation
     /***
      * Find all entities that are relevant to the given entity
-     * @param entity the given entity
+     * @param embedding embedding of the given entity
      * @return the set of all entities that are relevant to the given entity
      */
-    private Set<OntClass> findAllRelevantEntities(OntClass entity){
-        // TODO: return all entities that are relevant to the given entity, find it from the embedding server
-        return null;
+    private Set<OntClass> findAllRelevantEntities(ArrayList<Double> embedding){
+        ArrayList<String> uris = db.getUrisNotNegotiated(embedding, SIMILARITY_THRESHOLD);
+        if (uris == null){
+            return null;
+        }
+        HashSet<OntClass> relevantEntities = new HashSet<>();
+        for(String uri : uris){
+            relevantEntities.add(ontology.getOntClass(uri));
+        }
+        if(relevantEntities.isEmpty()){
+            return null;
+        }
+        return relevantEntities;
     }
 
     /***
@@ -161,7 +178,7 @@ public class OntologyAgent {
     private Set<PotentialCorrespondence> examineRelevantEntities(OntClass entity, Set<OntClass> relevantEntities){
         Set<PotentialCorrespondence> potentialCorrespondences = new HashSet<>();
         for (OntClass relevantEntity : relevantEntities) {
-            PotentialCorrespondence potentialCorrespondence = examineRelevantEntities(entity, relevantEntity);
+            PotentialCorrespondence potentialCorrespondence = examineRelevantEntity(entity, relevantEntity);
             if (potentialCorrespondence != null){
                 potentialCorrespondences.add(potentialCorrespondence);
             }
@@ -175,8 +192,15 @@ public class OntologyAgent {
      * @param relevantEntity the given relevant entity
      * @return the correspondence of the given entity and the given relevant entity. If the relevance is not enough, return null
      */
-    private PotentialCorrespondence examineRelevantEntities(OntClass entity, OntClass relevantEntity){
-        //TODO: examine the relevance of the given entity and the given relevant entity
+    private PotentialCorrespondence examineRelevantEntity(OntClass entity, OntClass relevantEntity){
+        //TODO: convert entity and relevantEntity to string
+        String entityString = "";
+        String relevantEntityString = "";
+
+        boolean result = ai.comepareComponenties(entityString, relevantEntityString);
+        if (result){
+            return new PotentialCorrespondence(entity, relevantEntity, CorrespondenceRelation.EQUIVALENCE, this);
+        }
         return null;
     }
 // endregion

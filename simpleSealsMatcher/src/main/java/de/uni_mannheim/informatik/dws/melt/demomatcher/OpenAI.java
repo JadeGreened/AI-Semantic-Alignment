@@ -26,7 +26,7 @@ public class OpenAI {
             .credential(new AzureKeyCredential(azureOpenaiKey))
             .buildClient();
 
-    public String comepareComponenties(String component1, String component2){
+    public boolean comepareComponenties(String component1, String component2){
         String prompt = "<Problem Definition>\n" +
                 "In this task, we are given two ontologies in the form of Relation(Subject, Object), which\n" +
                 "consist of classes and properties.\n" +
@@ -36,7 +36,11 @@ public class OpenAI {
 
         String ontologies = String.format("[%s,%s]", component1, component2);
         String input = String.format(prompt, ontologies);
-        return think(input);
+        String thought = think(input);
+
+        // TODO: check if the thought is yes or no
+
+        return false;
     }
 
     public List<Float> getEmbeddings(String prompt) {

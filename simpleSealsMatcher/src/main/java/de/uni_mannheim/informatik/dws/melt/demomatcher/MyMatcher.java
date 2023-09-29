@@ -99,8 +99,8 @@ public class MyMatcher extends MatcherYAAAJena {
      * @param target target ontology
      */
     private void setup(OntModel source, OntModel target, boolean isOnline){
-        this.targetAgent = new OntologyAgent(target, "target", isOnline);
-        this.sourceAgent = new OntologyAgent(source, "source", isOnline);
+        this.targetAgent = new OntologyAgent(target, "Target", isOnline);
+        this.sourceAgent = new OntologyAgent(source, "Source", isOnline);
     }
 
     /***
@@ -115,13 +115,14 @@ public class MyMatcher extends MatcherYAAAJena {
     private Correspondence startNegotiationForOneEntity(OntologyAgent source, OntologyAgent target) {
         // source agent pick one unaligned entity
         OntClass entity = source.startNegotiation();
+        ArrayList<Double> embedding = source.getEmbedding(entity);
         if (entity == null){
             source.Finish();
             return null;
         }
 
         // target agent find potential alignment
-        Set<PotentialCorrespondence> potentialCorrespondences = target.receiveNegotiation(entity);
+        Set<PotentialCorrespondence> potentialCorrespondences = target.receiveNegotiation(entity, embedding);
         if (potentialCorrespondences == null){
             return null;
         }

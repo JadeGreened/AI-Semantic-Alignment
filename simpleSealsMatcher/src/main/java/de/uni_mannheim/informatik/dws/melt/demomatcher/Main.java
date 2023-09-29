@@ -32,10 +32,8 @@ import org.xml.sax.SAXException;
 
 public class Main {
     public static void main(String[] args) throws IOException {
-//        uploadEmbeddingsFromFile("target.json", "target");
-//        uploadEmbeddingsFromFile("source.json", "source");
-//        uploadEmbeddingsFromFileToWeaviate("source.json", "source");
-//        uploadEmbeddingsFromFileToWeaviate("target.json", "target");
+//        uploadEmbeddingsFromFileToWeaviate("source.json", "Source");
+//        uploadEmbeddingsFromFileToWeaviate("target.json", "Target");
 
 //        runMatcherWithLocalData();
 
@@ -138,6 +136,7 @@ public class Main {
     }
 
     private static void uploadEmbeddingsFromFileToWeaviate(String fileName, String collectionName) throws IOException {
+        print("uploading embeddings to weaviate collection " + collectionName + " ...");
         FileReader fileReader = new FileReader(fileName);
         JSONReader jsonReader = new JSONReader(fileReader);
 
@@ -155,8 +154,8 @@ public class Main {
             }
 //            var.put("vector", vector);
 
-            Result<WeaviateObject> result = db.client.data().creator()
-                    .withClassName("source")
+            db.client.data().creator()
+                    .withClassName(collectionName)
                     .withVector(vector.toArray(new Float[0]))
                     .withProperties(new HashMap<String, Object>() {{
                         put("uri", var.get("uri"));
@@ -164,9 +163,6 @@ public class Main {
                     }})
                     .run();
 
-// the returned value is the object
-            String json = new GsonBuilder().setPrettyPrinting().create().toJson(result.getResult());
-            System.out.println(json);
 //            rows.add(var);
         }
 
