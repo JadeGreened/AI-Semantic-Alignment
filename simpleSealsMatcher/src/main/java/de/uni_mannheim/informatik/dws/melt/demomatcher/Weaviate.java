@@ -13,6 +13,9 @@ import io.weaviate.client.v1.schema.model.WeaviateClass;
 
 import java.util.ArrayList;
 
+/***
+ * @See https://weaviate.io/developers/weaviate/api/graphql for more information.
+ */
 public class Weaviate {
 
     public static final WeaviateClient client = new WeaviateClient(new Config("http", "localhost:8080"));
