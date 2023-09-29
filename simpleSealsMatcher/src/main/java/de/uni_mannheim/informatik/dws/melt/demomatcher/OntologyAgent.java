@@ -1,10 +1,10 @@
 package de.uni_mannheim.informatik.dws.melt.demomatcher;
 
 import com.alibaba.fastjson.JSONObject;
-import de.uni_mannheim.informatik.dws.melt.yet_another_alignment_api.Correspondence;
-import de.uni_mannheim.informatik.dws.melt.yet_another_alignment_api.CorrespondenceRelation;
 import org.apache.jena.ontology.OntClass;
 import org.apache.jena.ontology.OntModel;
+import org.apache.jena.rdf.model.Statement;
+import org.apache.jena.rdf.model.StmtIterator;
 
 import java.io.FileWriter;
 import java.io.IOException;
@@ -95,10 +95,11 @@ public class OntologyAgent {
     /***
      * Receive the entity from the other agent, and find all entities that are relevant to the given entity
      * @param entity the given entity
+     * @param embedding embedding of the given entity
      * @return the set of all entities that are relevant to the given entity. null if no relevant entities.
      */
-    public Set<PotentialCorrespondence> receiveNegotiation(OntClass entity, ArrayList<Double> embedding) {
-        Set<OntClass> relevantEntities = findAllRelevantEntities(embedding);
+    public Set<PotentialCorrespondence> proposeCorrespondence(OntClass entity, ArrayList<Double> embedding) {
+        Set<OntClass> relevantEntities = findAllRelevantNotNegotiatedEntities(embedding);
         if (relevantEntities == null){
             return null;
         }
@@ -111,15 +112,18 @@ public class OntologyAgent {
 
     /***
      * Receive the correspondences with relevant entities from the other agent, and find all entities that are relevant to the given entity
-     * @param entity the given entity
+     * @param theEntity the source entity of the negotiation
      * @param potentialCorrespondences the set of all correspondences with relevant entities. The source entity is the original one to align.
-     * @return the set of all correspondences that are relevant to the given entity. will NOT be null.
+     * @return the selected correspondence. will NOT be null.
      */
-    public Set<PotentialCorrespondence> furtherNegotiation(OntClass entity, Set<PotentialCorrespondence> potentialCorrespondences){
+    public PotentialCorrespondence checkProposal(OntClass theEntity, Set<PotentialCorrespondence> potentialCorrespondences, PotentialCorrespondence betterCorrespondence, OntologyAgent otherAgent){
         // TODO: register received entity to the Joint Knowledge Base
 
+        // TODO: source find relevant entities of target's proposed entities.
+        // TODO: source ask openAI which one is better, given the proposed entities, target's preference and the relevant entities.
 
-        // TODO: find all entities that are relevant to the given entity
+
+        // check if entities in newly added correspondences have better alignment
         for (PotentialCorrespondence potentialCorrespondence: potentialCorrespondences){
             // if it has been examined
             if (potentialCorrespondence.isExamined()){
@@ -129,25 +133,65 @@ public class OntologyAgent {
             if (potentialCorrespondence.getGenerator() == this){
                 continue;
             }
-            // if it is the entity of this agent
-            if (ontology.getOntClass(potentialCorrespondence.getSource().getURI()) != null){
+
+            // find potential alignment for the target entity of correspondence
+            Set<PotentialCorrespondence> proposedCorrespondencesOfTarget = this.proposeCorrespondence(potentialCorrespondence.getTarget(), getEmbedding(potentialCorrespondence.getTarget()));
+
+            if (proposedCorrespondencesOfTarget == null){
+                potentialCorrespondence.setExamined();
                 continue;
             }
 
-            // TODO: check if there is better alignment to the target entity
-            Set<OntClass> relevantEntities = findAllRelevantEntities(getEmbedding(potentialCorrespondence.getTarget()));
-            if (relevantEntities == null){
-                continue;
+            // ask GPT which one is better for the target
+            String[] newCorrespondences = new String[proposedCorrespondencesOfTarget.size()];
+            int i = 0;
+            for (PotentialCorrespondence correspondence : proposedCorrespondencesOfTarget) {
+                newCorrespondences[i++] = toStringForGPT(correspondence.getTarget());
+            }
+            i = ai.whichComponentIsBetter(toStringForGPT(potentialCorrespondence.getTarget()), newCorrespondences);
+
+            if (i > -1){    // if there's a result
+                if (i < potentialCorrespondences.size()) {   // if the result is in the range of the received correspondences
+                    // TODO: find which entity it is
+                    // TODO: check if the entity is theEntity
+                        // TODO: if yes, agree the correspondence
+                        // TODO: if not, disagree the correspondence and propose
+                        //  a) the better choice of the new one,
+                        //  and b)
+                }
             }
         }
-        // TODO: examine all entities that are relevant to the given entity for correspondences
+
+        // examine all entities that are in newly added correspondences
         // TODO: compare the correspondences with the received correspondences
         // TODO: register the correspondences to the Joint Knowledge Base
         return null;
     }
 
-    public Set<PotentialCorrespondence> checkPotentialCorrespondence(OntClass source){
+    /***
+     * Find which one from the proposed correspondences is better as an alignment for the given entity
+     * @param entity the given entity
+     * @param proposedCorrespondences the set of all proposed correspondences
+     * @return the selected correspondence. Null if something wrong.
+     */
+    public PotentialCorrespondence whichTargetIsBetter(OntClass entity, Set<PotentialCorrespondence> proposedCorrespondences){
+        String[] newCorrespondences = new String[proposedCorrespondences.size()];
+        OntClass[] newCorrespondencesEntities = new OntClass[proposedCorrespondences.size()];
+        int i = 0;
+        for (PotentialCorrespondence correspondence : proposedCorrespondences) {
+            newCorrespondencesEntities[i] = correspondence.getTarget();
+            newCorrespondences[i++] = toStringForGPT(correspondence.getTarget());
+        }
+        i = ai.whichComponentIsBetter(toStringForGPT(entity), newCorrespondences);
 
+        if (i < 0){
+            return null;
+        }
+        if (i >= proposedCorrespondences.size()) {
+            return null;
+        }
+
+        return new PotentialCorrespondence(entity, newCorrespondencesEntities[i], this);
     }
 
     /***
@@ -166,13 +210,12 @@ public class OntologyAgent {
 //        this.db.dropCollection();
     }
 
-// region private methods for negotiation
     /***
      * Find all entities that are relevant to the given entity
      * @param embedding embedding of the given entity
-     * @return the set of all entities that are relevant to the given entity
+     * @return the set of all entities that are relevant to the given entity. Null if no relevant entities.
      */
-    private Set<OntClass> findAllRelevantEntities(ArrayList<Double> embedding){
+    private Set<OntClass> findAllRelevantNotNegotiatedEntities(ArrayList<Double> embedding){
         ArrayList<String> uris = db.getUrisNotNegotiated(embedding, SIMILARITY_THRESHOLD);
         if (uris == null){
             return null;
@@ -211,9 +254,8 @@ public class OntologyAgent {
      * @return the correspondence of the given entity and the given relevant entity. If the relevance is not enough, return null
      */
     private PotentialCorrespondence examineRelevantEntity(OntClass entity, OntClass relevantEntity){
-        //TODO: convert entity and relevantEntity to string
-        String entityString = "";
-        String relevantEntityString = "";
+        String entityString = toStringForGPT(entity);
+        String relevantEntityString = toStringForGPT(relevantEntity);
 
         boolean result = ai.comepareComponenties(entityString, relevantEntityString);
         if (result){
@@ -221,5 +263,44 @@ public class OntologyAgent {
         }
         return null;
     }
-// endregion
+
+    private String toStringForGPT(OntClass ontClass){
+        String info = "";
+        String uri = ontClass.getURI();
+        info += "Class  URI: " + uri + "\n";
+
+        // 获取并打印类的标签
+        String label = ontClass.getLabel(null);
+        System.out.println("Label: " + label);
+        info += "Label: " + label + "\n";
+        //所有的属性
+        for (StmtIterator i = ontClass.listProperties(); i.hasNext(); ) {
+            Statement stmt = i.next();
+            info += "Property: " + stmt.getPredicate().getLocalName() + "\n";
+            info += "Value: " + stmt.getObject().toString() + "\n";
+        }
+        return info;
+    }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

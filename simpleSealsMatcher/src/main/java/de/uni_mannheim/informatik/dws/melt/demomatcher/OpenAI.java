@@ -45,6 +45,23 @@ public class OpenAI {
         return false;
     }
 
+    /***
+     * Compare between targets, decide which one is a better choice aligning to the source
+     * @param source the source component
+     * @param targets the target components
+     * @return the index of the best target. The index must be in the range of [0, targets.length - 1]. -1 if something goes wrong.
+     */
+    public int whichComponentIsBetter(String source, String[] targets){
+        String prompt = "";
+
+        String ontologies = String.format("[%s,%s]", source, targets);
+        String input = String.format(prompt, ontologies);
+        String thought = think(input);
+
+        // TODO: format the result into an integer
+        return -1;
+    }
+
     public List<Float> getEmbeddings(String prompt) {
         EmbeddingsOptions embeddingsOptions = new EmbeddingsOptions(Arrays.asList(prompt));
         Embeddings embeddings = client.getEmbeddings("text-embedding-ada-002", embeddingsOptions);

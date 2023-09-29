@@ -9,7 +9,6 @@ import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.rdf.model.StmtIterator;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Properties;
 import java.util.Set;
 
@@ -115,45 +114,33 @@ public class MyMatcher extends MatcherYAAAJena {
     private Correspondence startNegotiationForOneEntity(OntologyAgent source, OntologyAgent target) {
         // source agent pick one unaligned entity
         OntClass entity = source.startNegotiation();
-        ArrayList<Double> embedding = source.getEmbedding(entity);
         if (entity == null){
             source.Finish();
             return null;
         }
 
+        ArrayList<Double> embedding = source.getEmbedding(entity);
+
         // target agent find potential alignment
-        Set<PotentialCorrespondence> potentialCorrespondences = target.receiveNegotiation(entity, embedding);
-        if (potentialCorrespondences == null){
+        Set<PotentialCorrespondence> proposedCorrespondences = target.proposeCorrespondence(entity, embedding);
+        if (proposedCorrespondences == null){
             return null;
         }
 
-        // agents negotiate on the potential correspondences, and return the final correspondence
-        while (potentialCorrespondences.size() > 1){
-            // source agent validate correspondences and propose new correspondences
-            potentialCorrespondences = source.furtherNegotiation(entity, potentialCorrespondences);
-            if (potentialCorrespondences == null){
-                return null;
-            }
-            if (potentialCorrespondences.size() <= 1){
-                break;
-            }
-            // target agent validate correspondences and propose new correspondences
-            potentialCorrespondences = target.furtherNegotiation(entity, potentialCorrespondences);
-            if (potentialCorrespondences == null){
-                return null;
-            }
+        // target agent ask openAI which one is better.
+        PotentialCorrespondence betterCorrespondence = target.whichTargetIsBetter(entity, proposedCorrespondences);
+
+        // source agent check proposed correspondences
+        PotentialCorrespondence agreement = source.checkProposal(entity, proposedCorrespondences, betterCorrespondence, target);
+        if (agreement == null){
+            return null;
         }
 
         // TODO: during the discussion, there would be components pairs discussed. Store the agreed result in the database.
 
-        if (potentialCorrespondences.size() == 1) {
-            for (PotentialCorrespondence potentialCorrespondence : potentialCorrespondences) {
-                source.endNegotiation(potentialCorrespondence);
-                target.endNegotiation(potentialCorrespondence);
-                return new Correspondence(potentialCorrespondence.getSource().getURI(), potentialCorrespondence.getTarget().getURI(), 1, potentialCorrespondence.getRelation());
-            }
-        }
-        return null;    // TODO: return the agreed correspondence
+        source.endNegotiation(agreement);
+        target.endNegotiation(agreement);
+        return new Correspondence(agreement.getSource().getURI(), agreement.getTarget().getURI(), 1, agreement.getRelation());
     }
 
 
