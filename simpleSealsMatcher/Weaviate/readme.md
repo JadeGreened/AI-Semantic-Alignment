@@ -19,3 +19,13 @@ You will need to upload embeddings to the database everytime you start a new ins
 Note: The database will remain the same even if you restart the docker container. However, if you delete the container, the database will be deleted as well.
 
 Therefore, it's hightly recommended to have a good naming convention for the collection for different dataset. For example "name_of_the_dataset-name_of_the_agent". This way, you can keep all the embeddings while not mass up with your database.
+
+## Brief introduction to Docker
+See the screenshot below. 
+
+After you run the docker compose command, docker will build image in the image tab. The image is stored on your disk, and you don't need to rebuild image everytime. So leave it there, and don't delete it.
+
+The Weaviate instance is runnint in a container, the green icon as shown in the image. If you want to delete your database instance, delete this one. Again note: delete the container will totally remove all data insdie.
+![docker screenshot](./brief-to-docker.png)
+
+
