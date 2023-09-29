@@ -23,12 +23,84 @@ import org.xml.sax.SAXException;
 public class Main {
     public static void main(String[] args) throws IOException {
 //        uploadEmbeddingsFromFile("target.json", "target");
+//        uploadEmbeddingsFromFile("source.json", "source");
 
+//        runMatcherWithLocalData();
 
-        runMatcherWithLocalData();
+        testOnOneEntityNegotiation();
 
+//        testOntClassNullURL();
 //        testOntModelProperties();
 //        testMatcherOnline();
+    }
+
+    private static void testOnOneEntityNegotiation(){
+
+        OntModel source = ModelFactory.createOntologyModel(OntModelSpec.OWL_DL_MEM);
+        OntModel target = ModelFactory.createOntologyModel(OntModelSpec.OWL_DL_MEM);
+        Alignment reference;
+        // for windows
+//        source.read("D:\\WorkSpace\\projects\\sealsproj\\simpleSealsMatcher\\src\\main\\java\\DataSet\\human.owl");
+//        target.read("D:\\WorkSpace\\projects\\sealsproj\\simpleSealsMatcher\\src\\main\\java\\DataSet\\mouse.owl");
+        // for shiyao
+        source.read("simpleSealsMatcher/src/main/java/DataSet/human.owl");
+        target.read("simpleSealsMatcher/src/main/java/DataSet/mouse.owl");
+        try {
+            reference = AlignmentParser.parse("simpleSealsMatcher/src/main/java/DataSet/reference.rdf");
+        } catch (SAXException e) {
+            throw new RuntimeException(e);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        MyMatcher myMatcher = new MyMatcher();
+        Alignment alignment;
+        try {
+            alignment = myMatcher.matchLocally(source, target);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private static void testOntClassNullURL() {
+        OntModel source = ModelFactory.createOntologyModel(OntModelSpec.OWL_DL_MEM);
+        source.read("simpleSealsMatcher/src/main/java/DataSet/human.owl");
+
+        for (OntClass var : source.listClasses().toList()) {
+            if (var.getURI() == null){
+                print("var==================");
+                print(var.getLabel(null));
+                print(var.getURI());
+                print(var.getLocalName());
+                print(var.getComment(null));
+                print(var.getNameSpace());
+                print(var.getVersionInfo());
+                if (var.getEquivalentClass() != null){
+                    print("equivalent class ================");
+                    print(var.getEquivalentClass().getURI());
+                    print(var.getEquivalentClass().getLocalName());
+                    print(var.getEquivalentClass().getLabel(null));
+                    print(var.getEquivalentClass().getComment(null));
+                }
+                if(var.getSubClass() != null){
+                    print("subclass========================");
+                    print(var.getSubClass().getURI());
+                    print(var.getSubClass().getLocalName());
+                    print(var.getSubClass().getLabel(null));
+                    print(var.getSubClass().getComment(null));
+                }
+                if(var.getSuperClass() != null){
+                    print("superclass========================");
+                    print(var.getSuperClass().getURI());
+                    print(var.getSuperClass().getLocalName());
+                    print(var.getSuperClass().getLabel(null));
+                    print(var.getSuperClass().getComment(null));
+                }
+
+                print(var.getSameAs() == null ? "null" : var.getSameAs().toString());
+                print(var.getDisjointWith() == null ? "null" : var.getDisjointWith().toString());
+            }
+        }
     }
 
     private static void uploadEmbeddingsFromFile(String fileName, String collectionName) throws IOException {
@@ -46,6 +118,7 @@ public class Main {
                 vector.add(((BigDecimal) bigDecimal).floatValue());
             }
             var.put("vector", vector);
+            var.put("isNegotiated", false);
             rows.add(var);
         }
 

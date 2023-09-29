@@ -29,11 +29,13 @@ public class Zilliz {
     参考文档地址：https://docs.zilliz.com/docs/quick-start
      */
     private static final ConnectParam connectParam = ConnectParam.newBuilder()
-            .withUri("https://in03-350996688b99398.api.gcp-us-west1.zillizcloud.com")
+            .withUri("https://in03-f91357a58967aa4.api.gcp-us-west1.zillizcloud.com")   // shiyao's cluster
+//            .withUri("https://in03-350996688b99398.api.gcp-us-west1.zillizcloud.com")
             // - For a serverless cluster, use an API key as the token.
             // - For a dedicated cluster, use the cluster credentials as the token
             // in the format of 'user:password'.
-            .withToken("0a6b71a6a363b8d87abd92436be75fc2ea8b89912d121a3d4dbc0b43bc6fee86618697b9c785761dbecbe44e9f8d206b74378e94")
+            .withToken("4ffd4a19ff2d5624905c2377ca41d4cba784919196bd66491be1e533e978c693709b3b92cd1bb470ee02aa1ce885bd2331d43bd4")  // shiyao's token
+//            .withToken("0a6b71a6a363b8d87abd92436be75fc2ea8b89912d121a3d4dbc0b43bc6fee86618697b9c785761dbecbe44e9f8d206b74378e94")
             .build();
     public static final  MilvusServiceClient client = new MilvusServiceClient(connectParam);
     private String collectionName;
@@ -58,6 +60,10 @@ public class Zilliz {
                 .withName("uri")
                 .withDataType(DataType.VarChar)
                 .withMaxLength(512)
+                .build();
+        FieldType isNegotiated = FieldType.newBuilder()
+                .withName("isNegotiated")
+                .withDataType(DataType.Bool)
                 .build();
         CreateCollectionParam createCollectionParam = CreateCollectionParam.newBuilder()
                 .withCollectionName(collectionName)
@@ -190,7 +196,8 @@ public class Zilliz {
     }
 
     public static void main(String[] args) throws Exception {
-        new Zilliz("source").dropCollection();
-        new Zilliz("target").dropCollection();
+//        new Zilliz("source").dropCollection();
+//        new Zilliz("target").dropCollection();
+        new Zilliz("test").dropCollection();
     }
 }

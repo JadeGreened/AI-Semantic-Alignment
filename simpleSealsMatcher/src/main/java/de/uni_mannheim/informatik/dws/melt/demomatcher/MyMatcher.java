@@ -18,34 +18,7 @@ public class MyMatcher extends MatcherYAAAJena {
     private OntologyAgent targetAgent;
     @Override
     public Alignment match(OntModel source, OntModel target, Alignment inputAlignment, Properties properties) throws Exception {
-        // setup agents, embeddings, database, and openAI
-        setup(source, target);
-
-        Alignment alignment = new Alignment();
-
-        // start alignment
-        // if there is at least one agent has unaligned components
-        while (!sourceAgent.isFinished() || !targetAgent.isFinished()){
-            // if source agent has unaligned components
-            if (!sourceAgent.isFinished()) {
-                Correspondence correspondence = startNegotiationForOneEntity(sourceAgent, targetAgent);
-                if (correspondence != null){
-                    alignment.add(correspondence);
-                }
-            }
-            // if target agent has unaligned components
-            if (!targetAgent.isFinished()) {
-                Correspondence correspondence = startNegotiationForOneEntity(sourceAgent, targetAgent);
-                if (correspondence != null){
-                    alignment.add(correspondence);
-                }
-            }
-        }
-
-        // clean database
-        clean();
-
-        return alignment;
+        return matchLogic(source, target, true);
 
 
 
@@ -85,14 +58,49 @@ public class MyMatcher extends MatcherYAAAJena {
 //        return alignment;
     }
 
+    public Alignment matchLocally(OntModel source, OntModel target){
+        return matchLogic(source, target, false);
+    }
+
+    private Alignment matchLogic(OntModel source, OntModel target, boolean isOnline){
+        // setup agents, embeddings, database, and openAI
+        setup(source, target, isOnline);
+
+        Alignment alignment = new Alignment();
+
+        // start alignment
+        // if there is at least one agent has unaligned components
+        while (!sourceAgent.isFinished() || !targetAgent.isFinished()){
+            // if source agent has unaligned components
+            if (!sourceAgent.isFinished()) {
+                Correspondence correspondence = startNegotiationForOneEntity(sourceAgent, targetAgent);
+                if (correspondence != null){
+                    alignment.add(correspondence);
+                }
+            }
+            // if target agent has unaligned components
+            if (!targetAgent.isFinished()) {
+                Correspondence correspondence = startNegotiationForOneEntity(sourceAgent, targetAgent);
+                if (correspondence != null){
+                    alignment.add(correspondence);
+                }
+            }
+        }
+
+        // clean database
+        clean();
+
+        return alignment;
+    }
+
     /***
      * setup agents, embeddings, database, and openAI
      * @param source source ontology
      * @param target target ontology
      */
-    private void setup(OntModel source, OntModel target){
-        this.targetAgent = new OntologyAgent(target, "target");
-        this.sourceAgent = new OntologyAgent(source, "source");
+    private void setup(OntModel source, OntModel target, boolean isOnline){
+        this.targetAgent = new OntologyAgent(target, "target", isOnline);
+        this.sourceAgent = new OntologyAgent(source, "source", isOnline);
     }
 
     /***

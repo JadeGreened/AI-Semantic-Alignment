@@ -20,12 +20,14 @@ public class OntologyAgent {
     private boolean isFinished = false;
     private String collectionName;
 
-    public OntologyAgent(OntModel ontology, String collectionName){
+    public OntologyAgent(OntModel ontology, String collectionName, boolean conductEmbedding){
         this.ontology = ontology;
         this.collectionName = collectionName;
         this.ai = new OpenAI();
         this.db = new Zilliz(collectionName).initCollection();
-        this.embeddingComponents(ontology);
+        if (conductEmbedding){
+            this.embeddingComponents(ontology);
+        }
     }
 
     private void embeddingComponents(OntModel ontology){
@@ -45,6 +47,7 @@ public class OntologyAgent {
 
             json_row.put("vector", ai.getEmbeddings(info));
             json_row.put("uri", ontClass.getURI());
+            json_row.put("isNegotiated", false);
 
             rows.add(json_row);
             System.out.println(++i);
