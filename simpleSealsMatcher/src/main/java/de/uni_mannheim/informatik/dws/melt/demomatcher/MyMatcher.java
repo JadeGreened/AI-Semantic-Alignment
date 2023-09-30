@@ -8,6 +8,8 @@ import org.apache.jena.ontology.OntModel;
 import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.rdf.model.StmtIterator;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Properties;
 import java.util.Set;
@@ -54,6 +56,12 @@ public class MyMatcher extends MatcherYAAAJena {
                 }
                 print("Current negotiation round: " + ++negotiationRound + ". Max round: 6048 = 3304 + 2744. Reference round: 1516.");
             }
+        }
+
+        try {
+            alignment.serializeToCSV(new File("alignment.csv"));
+        } catch (IOException e) {
+            print("Failed to save alignment to csv file. Error: " + e.getMessage());
         }
 
         // clean database
