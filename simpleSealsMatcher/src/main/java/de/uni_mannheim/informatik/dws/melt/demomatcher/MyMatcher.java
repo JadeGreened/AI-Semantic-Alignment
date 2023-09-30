@@ -80,7 +80,7 @@ public class MyMatcher extends MatcherYAAAJena {
             }
             // if target agent has unaligned components
             if (!targetAgent.isFinished()) {
-                Correspondence correspondence = startNegotiationForOneEntity(sourceAgent, targetAgent);
+                Correspondence correspondence = startNegotiationForOneEntity(targetAgent, sourceAgent);
                 if (correspondence != null){
                     alignment.add(correspondence);
                 }
