@@ -29,18 +29,18 @@ public class OpenAI {
 
     public int[] comepareComponenties(String source, String[] targets) {
         String prompt = "<Problem Definition>  \n" +
-                "In this task, we are givinga) one subject ontology, " +
-                "and b) a set of ontologies for potential alignment in the form of " +
-                "Relation(Subject, SetOntologies), which consist of classes and properties.  \n" +
-                "<Subject Ontology>  \n %s \n \n" + // subject ontology
+                "In this task, we are giving a) one subject entity, " +
+                "and b) a set of entities for potential alignment in the form of " +
+                "Relation(Subject, EntitiesOfOtherAgent), which consist of URIs and labels.  \n" +
+                "<Subject Entity>  \n %s \n \n" + // subject ontology
                 "%s \n \n" +    // ontology in sets
-                "Among all ontologies in the set, select all ontologies that you think " +
-                "having a possibility aligning with the subject ontology? Please only answer " +
-                "with the index of ontology (just the index, for example \"1, 2, 4\"). Answer \"no\" " +
-                "if you think none of them aligns with the subject ontology.";
+                "Among all entities of other ontology, select all entities that you think " +
+                "having a possibility aligning with the subject entity? Please only answer " +
+                "with the index of entity (just the index, for example \"1, 2, 4\"). Answer \"no\" " +
+                "if you think none of them aligns with the subject entity.";
         String targetsString = "";
         for (int i = 0; i < targets.length; i++) {
-            targetsString += String.format("<Ontology %d in set>  \n %s \n \n", i + 1, targets[i]);
+            targetsString += String.format("<Entity %d of other ontology>  \n %s \n \n", i + 1, targets[i]);
         }
         String input = String.format(prompt, source, targetsString);
         String thought = think(input);
@@ -60,11 +60,12 @@ public class OpenAI {
 
     public boolean comepareComponenties(String component1, String component2){
         String prompt = "<Problem Definition>\n" +
-                "In this task, we are given two ontologies in the form of Relation(Subject, Object), which\n" +
-                "consist of classes and properties.\n" +
-                "<Ontologies Triples>\n" +
-                "[Ontology 1:Ontology2]:%s\n" +
-                "    Do you think these two component are aligned? If so, please output:yes, otherwise, please output:no(just\"yes\" or \"no\", small character no other symbols required) ";
+                "In this task, we are given two entities in the form of Relation(Subject, Object), which\n" +
+                "consist of URIs and labels.\n" +
+                "<Entity Triples>\n" +
+                "[Entity 1:Entity2]:%s\n" +
+                "Do you think these two entities are aligned? If so, please output:yes, " +
+                "otherwise, please output:no(just\"yes\" or \"no\", small character no other symbols required) ";
 
         String ontologies = String.format("[%s,%s]", component1, component2);
         String input = String.format(prompt, ontologies);
@@ -86,7 +87,7 @@ public class OpenAI {
      * @return the index of the best target. The index must be in the range of [0, targets.length - 1]. -1 if something goes wrong.
      */
     public int whichComponentIsBetter(String source, String[] targets, int expertBeliefIndex){
-        String thought = think(getWhichIsBetterPrompt(source, targets, expertBeliefIndex));
+        String thought = think(getWhichIsBetterPrompt(source, targets, expertBeliefIndex, null));
 
         // format the result into an integer
         try{
@@ -95,35 +96,59 @@ public class OpenAI {
                 return result - 1;
             }
         } catch (NumberFormatException e){
-            System.out.println("Azure: The result is not a number.");
+            System.out.println("Azure: The result is not a number. though is: " + thought);
             return -1;
         }
         return -1;
     }
 
-    private String getWhichIsBetterPrompt(String source, String[] targets, int expertBeliefIndex){
+    public int whichComponentIsBetter(String source, String[] targets, int expertBeliefIndex, String[] relevantEntities){
+        String thought = think(getWhichIsBetterPrompt(source, targets, expertBeliefIndex, relevantEntities));
+
+        // format the result into an integer
+        try{
+            int result = Integer.parseInt(thought);
+            if (result > 0 && result <= targets.length){
+                return result - 1;
+            }
+        } catch (NumberFormatException e){
+//            System.out.println("Azure: The result is not a number.");
+            return -1;
+        }
+        return -1;
+    }
+
+    private String getWhichIsBetterPrompt(String source, String[] targets, int expertBeliefIndex, String[] relevantEntities){
         String prompt = "<Problem Definition>\n" +
-                "In this task, we are giving a) one subject ontology, " +
-                "and b) a set of ontologies for potential alignment in the form of " +
-                "Relation(Subject, SetOntologies), which consists of classes and properties.\n \n" +
-                "<Subject Ontology>  \n %s \n \n" + // subject ontology
-                "%s" +  //"<Ontology 1 in set>  \n %s \n \n" + ...
+                "In this task, we are giving a) one subject entity, " +
+                "and b) a set of entities for potential alignment in the form of " +
+                "Relation(Subject, EntitiesOfOtherAgent), which consists of URIs and labels.\n \n" +
+                "<Subject Entity>  \n %s \n \n" + // subject ontology
+                "%s" +  //"<Entity 1 of other ontology>  \n %s \n \n" + ...
                 "%s" +  // expert belief
-                "Among all ontologies in the set, which one do you think aligns " +
-                "with the subject ontology best? Please only answer with the index of " +
-                "ontology (just the index, for example \"1\", \"2\", \"3\",...)";
+                "%s" +  // relevant entities
+                "Among all entities of other ontology, which one do you think aligns " +
+                "with the subject entity best? Please only answer with the index of " +
+                "entity (just the index, for example \"1\", \"2\", \"3\",... \n )";
 
         String targetsString = "";
         for (int i = 0; i < targets.length; i++) {
-            targetsString += String.format("<Ontology %d in set>  \n %s \n \n", i + 1, targets[i]);
+            targetsString += String.format("<Entity %d of other ontology>  \n %s \n \n", i + 1, targets[i]);
         }
         String expertBeliefString = "";
         if (expertBeliefIndex > 0) {
-            expertBeliefString = String.format("Some experts believe that ontology %d in set is a better alignment " +
-                    "with the subject ontology among other ontologies in set. ", expertBeliefIndex);
+            expertBeliefString = String.format("Some experts believe that entity %d in set is a better alignment " +
+                    "with the subject entity among other entities in set. ", expertBeliefIndex);
+        }
+        String relevantEntitiesString = "";
+        if (relevantEntities != null){
+            relevantEntitiesString = "We provide you following entities that are relevant to the subject entity for reference. \n";
+            for (int i = 0; i < relevantEntities.length; i++) {
+                relevantEntitiesString += String.format("<Entity %d relevant to the subject entity>  \n %s \n \n", i + 1, relevantEntities[i]);
+            }
         }
 
-        return String.format(prompt, source, targetsString, expertBeliefString);
+        return String.format(prompt, source, targetsString, expertBeliefString, relevantEntitiesString);
     }
 
     public List<Float> getEmbeddings(String prompt) {
@@ -149,7 +174,7 @@ public class OpenAI {
                 flag = true;
             } catch (HttpResponseException e){
 //                System.out.println(e.getMessage());
-                System.out.println("Azure: Waiting for the server to be ready...");
+//                System.out.println("Azure: Waiting for the server to be ready...");
             }
         }
         String result = chatCompletions.getChoices().get(0).getMessage().getContent();

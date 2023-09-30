@@ -30,6 +30,7 @@ public class MyMatcher extends MatcherYAAAJena {
         setup(source, target, isOnline);
 
         Alignment alignment = new Alignment();
+        int count = 0;
 
         // start alignment
         // if there is at least one agent has unaligned components
@@ -39,6 +40,7 @@ public class MyMatcher extends MatcherYAAAJena {
                 Correspondence correspondence = startNegotiationForOneEntity(sourceAgent, targetAgent);
                 if (correspondence != null){
                     alignment.add(correspondence);
+                    print("" + ++count);
                 }
             }
             // if target agent has unaligned components
@@ -46,6 +48,7 @@ public class MyMatcher extends MatcherYAAAJena {
                 Correspondence correspondence = startNegotiationForOneEntity(targetAgent, sourceAgent);
                 if (correspondence != null){
                     alignment.add(correspondence);
+                    print("" + ++count);
                 }
             }
         }
@@ -91,16 +94,17 @@ public class MyMatcher extends MatcherYAAAJena {
         // target agent find potential alignment
         Set<PotentialCorrespondence> proposedCorrespondences = target.proposeCorrespondence(entity, embedding);
         if (proposedCorrespondences == null){
-            print(target.getCollectionName() + " find no potential entity for alignment.");
+            print(target.getCollectionName() + " find no potential alignment for " + entity.getLabel(null));
             // mark the entity as negotiated.
             source.markNegotiated(entity);
             return null;
         }
 
         // target agent ask openAI which one is better.
-        PotentialCorrespondence betterCorrespondence = target.whichTargetIsBetter(entity, proposedCorrespondences);
+        PotentialCorrespondence betterCorrespondence = target.whichTargetIsBetter(entity, proposedCorrespondences, null);
         if (betterCorrespondence == null){
             source.markNegotiated(entity);
+            print(target.getCollectionName() + " thinks no option is good for " + entity.getLabel(null) + ". It looked at ." + proposedCorrespondences.toString());
             return null;
         }
         print(target.getCollectionName() + " find the better one: " + betterCorrespondence.getTarget().getLabel(null));
@@ -109,7 +113,7 @@ public class MyMatcher extends MatcherYAAAJena {
         PotentialCorrespondence agreement = source.whichTargetIsBetter(entity, proposedCorrespondences, betterCorrespondence.getTarget());
 //        PotentialCorrespondence agreement = source.checkProposal(entity, proposedCorrespondences, betterCorrespondence, target);
         if (agreement == null){
-            print(source.getCollectionName() + " has problem on agreement");
+            print(source.getCollectionName() + " dont' think any entity proposed by " + target.getCollectionName() + " is good for " + entity.getLabel(null) + ". It looked at ." + betterCorrespondence.getTarget().getLabel(null));
             return null;
         }
         print(source.getCollectionName() + " make agreement: " + agreement.getTarget().getLabel(null));
@@ -118,6 +122,7 @@ public class MyMatcher extends MatcherYAAAJena {
 
         source.markNegotiated(agreement.getSource());
         target.markNegotiated(agreement.getTarget());
+        print("Alignment found: " + agreement.getSource().getLabel(null) + " - " + agreement.getTarget().getLabel(null));
         return new Correspondence(agreement.getSource().getURI(), agreement.getTarget().getURI(), 1, agreement.getRelation());
     }
 
