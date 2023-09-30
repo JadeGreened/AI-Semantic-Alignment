@@ -17,44 +17,7 @@ public class MyMatcher extends MatcherYAAAJena {
     private OntologyAgent targetAgent;
     @Override
     public Alignment match(OntModel source, OntModel target, Alignment inputAlignment, Properties properties) throws Exception {
-        return matchLogic(source, target, true);
-
-
-
-
-//        Alignment alignment = new Alignment();
-//
-//        // 获取一个类
-//        ArrayList<String> sourceList = toArrayList(source);
-//        ArrayList<String> targetList = toArrayList(target);
-//
-//        try {
-////            sourceDatabase.insertData(targetList);
-//        } catch (Exception e) {
-//            throw new RuntimeException(e);
-//        }
-            /*
-            这里还是按照原来的算法来的，
-            先语义搜索到相似的class，然后再进行对齐，如果我们的整个模型测出来的效果不好的话，可以用暴力遍历。
-             */
-//        for (String s : sourceList) {
-//            List<String> query = sourceDatabase.query(s);
-//            for (String s1 : query) {
-//                String thought = openAI.comepareComponenties(s, s1);
-//                System.out.println(thought);
-//                if (thought.equals("yes")){
-//                    String uriSource = getURI(s);
-//                    String uriTarget = getURI(s1);
-//                    alignment.add(uriSource,uriTarget);
-//                }else if (thought.equals("Yes")){
-//                    String uriSource = getURI(s);
-//                    String uriTarget = getURI(s1);
-//                    alignment.add(uriSource,uriTarget);
-//                }
-//            }
-//        }
-
-//        return alignment;
+        return matchLogic(source, target, false);
     }
 
     public Alignment matchLocally(OntModel source, OntModel target){
@@ -129,11 +92,17 @@ public class MyMatcher extends MatcherYAAAJena {
         Set<PotentialCorrespondence> proposedCorrespondences = target.proposeCorrespondence(entity, embedding);
         if (proposedCorrespondences == null){
             print(target.getCollectionName() + " find no potential entity for alignment.");
+            // mark the entity as negotiated.
+            source.markNegotiated(entity);
             return null;
         }
 
         // target agent ask openAI which one is better.
         PotentialCorrespondence betterCorrespondence = target.whichTargetIsBetter(entity, proposedCorrespondences);
+        if (betterCorrespondence == null){
+            source.markNegotiated(entity);
+            return null;
+        }
         print(target.getCollectionName() + " find the better one: " + betterCorrespondence.getTarget().getLabel(null));
 
         // source agent check proposed correspondences
@@ -147,8 +116,8 @@ public class MyMatcher extends MatcherYAAAJena {
 
         // TODO: during the discussion, there would be components pairs discussed. Store the agreed result in the database.
 
-        source.endNegotiation(agreement);
-//        target.endNegotiation(agreement);
+        source.markNegotiated(agreement.getSource());
+        target.markNegotiated(agreement.getTarget());
         return new Correspondence(agreement.getSource().getURI(), agreement.getTarget().getURI(), 1, agreement.getRelation());
     }
 

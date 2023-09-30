@@ -223,15 +223,8 @@ public class OntologyAgent {
         return new PotentialCorrespondence(entity, newCorrespondencesEntities[i], this);
     }
 
-
-    /***
-     * End the negotiation. Register the correspondence to the Joint Knowledge Base
-     * @param potentialCorrespondence the potential agreed correspondence.
-     */
-    public void endNegotiation(PotentialCorrespondence potentialCorrespondence){
-        // TODO: register the correspondence to the Joint Knowledge Base
-
-        db.markNegotiated(potentialCorrespondence.getSource().getURI(), potentialCorrespondence.getTarget().getURI());
+    public void markNegotiated(OntClass entity){
+        db.markNegotiated(entity.getURI());
     }
 
     public void Finish() {
@@ -254,8 +247,12 @@ public class OntologyAgent {
         }
         HashSet<OntClass> relevantEntities = new HashSet<>();
         for(String uri : uris){
-            relevantEntities.add(ontology.getOntClass(uri));
-            System.out.println(collectionName + " find a entity based on embedding: " + ontology.getOntClass(uri).getLabel(null));
+            OntClass tmp = ontology.getOntClass(uri);
+            if(tmp == null){    // where there is vect
+                continue;
+            }
+            relevantEntities.add(tmp);
+            System.out.println(collectionName + " find a entity based on embedding: " + tmp.getLabel(null));
         }
         if(relevantEntities.isEmpty()){
             return null;

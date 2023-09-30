@@ -123,10 +123,9 @@ public class Weaviate {
         return uris;
     }
 
-    public void markNegotiated(String sourceUri, String targetUri) {
-        boolean result1 = updateNegotiated(sourceUri, true);
-        boolean result2 = updateNegotiated(targetUri, true);
-        if (!result1 || !result2){
+    public void markNegotiated(String sourceUri) {
+        boolean result = updateNegotiated(sourceUri, true);
+        if (!result){
             System.out.println("Error: Failed to mark negotiated.");
         }
     }

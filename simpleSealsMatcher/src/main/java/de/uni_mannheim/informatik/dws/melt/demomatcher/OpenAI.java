@@ -96,6 +96,7 @@ public class OpenAI {
             }
         } catch (NumberFormatException e){
             System.out.println("Azure: The result is not a number.");
+            return -1;
         }
         return -1;
     }

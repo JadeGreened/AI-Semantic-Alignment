@@ -4,6 +4,8 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.JSONReader;
 import com.google.gson.GsonBuilder;
+import de.uni_mannheim.informatik.dws.melt.matching_data.TestCase;
+import de.uni_mannheim.informatik.dws.melt.matching_data.Track;
 import de.uni_mannheim.informatik.dws.melt.matching_data.TrackRepository;
 import de.uni_mannheim.informatik.dws.melt.matching_eval.ExecutionResultSet;
 import de.uni_mannheim.informatik.dws.melt.matching_eval.Executor;
@@ -19,6 +21,7 @@ import io.weaviate.client.v1.schema.model.WeaviateClass;
 import org.apache.jena.ontology.*;
 import org.apache.jena.rdf.model.ModelFactory;
 
+import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -46,30 +49,48 @@ public class Main {
 
     private static void testOnOneEntityNegotiation(){
 
-        OntModel source = ModelFactory.createOntologyModel(OntModelSpec.OWL_DL_MEM);
-        OntModel target = ModelFactory.createOntologyModel(OntModelSpec.OWL_DL_MEM);
-        Alignment reference;
-        // for windows
-//        source.read("D:\\WorkSpace\\projects\\sealsproj\\simpleSealsMatcher\\src\\main\\java\\DataSet\\human.owl");
-//        target.read("D:\\WorkSpace\\projects\\sealsproj\\simpleSealsMatcher\\src\\main\\java\\DataSet\\mouse.owl");
-        // for shiyao
-        source.read("simpleSealsMatcher/src/main/java/DataSet/human.owl");
-        target.read("simpleSealsMatcher/src/main/java/DataSet/mouse.owl");
-        try {
-            reference = AlignmentParser.parse("simpleSealsMatcher/src/main/java/DataSet/reference.rdf");
-        } catch (SAXException e) {
-            throw new RuntimeException(e);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+//        OntModel source = ModelFactory.createOntologyModel(OntModelSpec.OWL_DL_MEM);
+//        OntModel target = ModelFactory.createOntologyModel(OntModelSpec.OWL_DL_MEM);
+//        Alignment reference;
+//        // for windows
+////        source.read("D:\\WorkSpace\\projects\\sealsproj\\simpleSealsMatcher\\src\\main\\java\\DataSet\\human.owl");
+////        target.read("D:\\WorkSpace\\projects\\sealsproj\\simpleSealsMatcher\\src\\main\\java\\DataSet\\mouse.owl");
+//        // for shiyao
+//        source.read("simpleSealsMatcher/src/main/java/DataSet/human.owl");
+//        target.read("simpleSealsMatcher/src/main/java/DataSet/mouse.owl");
+//        try {
+//            reference = AlignmentParser.parse("simpleSealsMatcher/src/main/java/DataSet/reference.rdf");
+//        } catch (SAXException e) {
+//            throw new RuntimeException(e);
+//        } catch (IOException e) {
+//            throw new RuntimeException(e);
+//        }
+//
+//        MyMatcher myMatcher = new MyMatcher();
+//        Alignment alignment;
+//        try {
+//            alignment = myMatcher.matchLocally(source, target);
+//        } catch (Exception e) {
+//            throw new RuntimeException(e);
+//        }
 
-        MyMatcher myMatcher = new MyMatcher();
-        Alignment alignment;
-        try {
-            alignment = myMatcher.matchLocally(source, target);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        File sourceFile = new File("simpleSealsMatcher/src/main/java/DataSet/human.owl");
+        File targetFile = new File("simpleSealsMatcher/src/main/java/DataSet/mouse.owl");
+        File referenceFile = new File("simpleSealsMatcher/src/main/java/DataSet/reference.owl");
+        // let's execute our matcher on the OAEI Anatomy test case
+        ExecutionResultSet ers = Executor.run(
+                new TestCase("localtest", sourceFile.toURI(), targetFile.toURI(), referenceFile.toURI(),
+                        new Track("", "", "", false) {
+                            @Override
+                            protected void downloadToCache() throws Exception {
+                                return;
+                            }
+                        }), new MyMatcher());
+
+        // let's evaluate our matcher (you can find the results in the `results` folder (will be created if it
+        // does not exist).
+        EvaluatorCSV evaluatorCSV = new EvaluatorCSV(ers);
+        evaluatorCSV.writeToDirectory();
     }
 
     private static void testOntClassNullURL() {
