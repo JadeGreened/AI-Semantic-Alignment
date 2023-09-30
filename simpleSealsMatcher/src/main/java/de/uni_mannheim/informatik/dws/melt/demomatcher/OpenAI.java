@@ -49,13 +49,18 @@ public class OpenAI {
             return new int[0];
         }
 
-        String[] results = thought.split(",");
-        int[] result = new int[results.length];
-        for (int i = 0; i < results.length; i++) {
-            result[i] = Integer.parseInt(results[i].trim()) - 1;
-        }
+        try{
+            String[] results = thought.split(",");
+            int[] result = new int[results.length];
+            for (int i = 0; i < results.length; i++) {
+                result[i] = Integer.parseInt(results[i].trim()) - 1;
+            }
 
-        return result;
+            return result;
+        } catch (NumberFormatException e){
+            System.out.println("Azure: The result is not a number. Thought is: " + thought);
+            return new int[0];
+        }
     }
 
     public boolean comepareComponenties(String component1, String component2){
@@ -96,7 +101,7 @@ public class OpenAI {
                 return result - 1;
             }
         } catch (NumberFormatException e){
-            System.out.println("Azure: The result is not a number. though is: " + thought);
+            System.out.println("Azure: The result is not a number. Thought is: " + thought);
             return -1;
         }
         return -1;
@@ -112,7 +117,7 @@ public class OpenAI {
                 return result - 1;
             }
         } catch (NumberFormatException e){
-//            System.out.println("Azure: The result is not a number.");
+            System.out.println("Azure: The result is not a number. Thought is: " + thought);
             return -1;
         }
         return -1;

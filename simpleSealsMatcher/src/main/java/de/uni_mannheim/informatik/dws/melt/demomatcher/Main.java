@@ -35,7 +35,7 @@ import org.xml.sax.SAXException;
 
 public class Main {
     public static void main(String[] args) throws IOException {
-//        initDatabase();
+        initDatabase();
         runMatcherWithLocalData();
 
 //        testOntClassNullURL();
