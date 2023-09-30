@@ -28,4 +28,5 @@ After you run the docker compose command, docker will build image in the image t
 The Weaviate instance is runnint in a container, the green icon as shown in the image. If you want to delete your database instance, delete this one. Again note: delete the container will totally remove all data insdie.
 ![docker screenshot](./brief-to-docker.png)
 
-
+## Weaviate documentation
+https://weaviate.io/developers/weaviate/api/graphql

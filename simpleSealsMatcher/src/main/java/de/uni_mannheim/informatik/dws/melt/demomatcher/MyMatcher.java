@@ -62,6 +62,7 @@ public class MyMatcher extends MatcherYAAAJena {
     }
 
     private Alignment matchLogic(OntModel source, OntModel target, boolean isOnline){
+        print("Alignment begin.");
         // setup agents, embeddings, database, and openAI
         setup(source, target, isOnline);
 
@@ -112,34 +113,42 @@ public class MyMatcher extends MatcherYAAAJena {
      * @return The agreed correspondence.
      */
     private Correspondence startNegotiationForOneEntity(OntologyAgent source, OntologyAgent target) {
+        print("Start one Negotiation ===================================");
         // source agent pick one unaligned entity
         OntClass entity = source.startNegotiation();
         if (entity == null){
             source.Finish();
+            print(source.getCollectionName() + " has no unaligned entity.");
             return null;
         }
+        print(source.getCollectionName() + " pick one unaligned entity: " + entity.getLabel(null));
 
         ArrayList<Double> embedding = source.getEmbedding(entity);
 
         // target agent find potential alignment
         Set<PotentialCorrespondence> proposedCorrespondences = target.proposeCorrespondence(entity, embedding);
         if (proposedCorrespondences == null){
+            print(target.getCollectionName() + " find no potential entity for alignment.");
             return null;
         }
 
         // target agent ask openAI which one is better.
         PotentialCorrespondence betterCorrespondence = target.whichTargetIsBetter(entity, proposedCorrespondences);
+        print(target.getCollectionName() + " find the better one: " + betterCorrespondence.getTarget().getLabel(null));
 
         // source agent check proposed correspondences
-        PotentialCorrespondence agreement = source.checkProposal(entity, proposedCorrespondences, betterCorrespondence, target);
+        PotentialCorrespondence agreement = source.whichTargetIsBetter(entity, proposedCorrespondences, betterCorrespondence.getTarget());
+//        PotentialCorrespondence agreement = source.checkProposal(entity, proposedCorrespondences, betterCorrespondence, target);
         if (agreement == null){
+            print(source.getCollectionName() + " has problem on agreement");
             return null;
         }
+        print(source.getCollectionName() + " make agreement: " + agreement.getTarget().getLabel(null));
 
         // TODO: during the discussion, there would be components pairs discussed. Store the agreed result in the database.
 
         source.endNegotiation(agreement);
-        target.endNegotiation(agreement);
+//        target.endNegotiation(agreement);
         return new Correspondence(agreement.getSource().getURI(), agreement.getTarget().getURI(), 1, agreement.getRelation());
     }
 

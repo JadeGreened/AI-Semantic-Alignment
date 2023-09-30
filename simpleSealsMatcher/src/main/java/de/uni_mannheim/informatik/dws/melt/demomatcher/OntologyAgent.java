@@ -30,6 +30,10 @@ public class OntologyAgent {
         this.db = new Weaviate(collectionName);
     }
 
+    public String getCollectionName() {
+        return collectionName;
+    }
+
     private void embeddingComponents(OntModel ontology){
         // TODO: rewrite this function with Weaviate
         List<JSONObject> rows = new ArrayList<>();
@@ -119,10 +123,13 @@ public class OntologyAgent {
     public PotentialCorrespondence checkProposal(OntClass theEntity, Set<PotentialCorrespondence> potentialCorrespondences, PotentialCorrespondence betterCorrespondence, OntologyAgent otherAgent){
         // TODO: register received entity to the Joint Knowledge Base
 
-        // TODO: source find relevant entities of target's proposed entities.
-        // TODO: source ask openAI which one is better, given the proposed entities, target's preference and the relevant entities.
 
+//        checkAllPotentialCorrespondencesWithSelfEntities(potentialCorrespondences);
+        // TODO: register the correspondences to the Joint Knowledge Base
+        return null;
+    }
 
+    private void checkAllPotentialCorrespondencesWithSelfEntities(Set<PotentialCorrespondence> potentialCorrespondences) {
         // check if entities in newly added correspondences have better alignment
         for (PotentialCorrespondence potentialCorrespondence: potentialCorrespondences){
             // if it has been examined
@@ -148,24 +155,22 @@ public class OntologyAgent {
             for (PotentialCorrespondence correspondence : proposedCorrespondencesOfTarget) {
                 newCorrespondences[i++] = toStringForGPT(correspondence.getTarget());
             }
-            i = ai.whichComponentIsBetter(toStringForGPT(potentialCorrespondence.getTarget()), newCorrespondences);
+            i = ai.whichComponentIsBetter(toStringForGPT(potentialCorrespondence.getTarget()), newCorrespondences, 0);
 
             if (i > -1){    // if there's a result
                 if (i < potentialCorrespondences.size()) {   // if the result is in the range of the received correspondences
                     // TODO: find which entity it is
                     // TODO: check if the entity is theEntity
-                        // TODO: if yes, agree the correspondence
-                        // TODO: if not, disagree the correspondence and propose
-                        //  a) the better choice of the new one,
-                        //  and b)
+                    // TODO: if yes, agree the correspondence
+                    // TODO: if not, disagree the correspondence and propose
+                    //  a) the better choice of the new one,
+                    //  and b)
                 }
             }
         }
 
         // examine all entities that are in newly added correspondences
         // TODO: compare the correspondences with the received correspondences
-        // TODO: register the correspondences to the Joint Knowledge Base
-        return null;
     }
 
     /***
@@ -182,7 +187,7 @@ public class OntologyAgent {
             newCorrespondencesEntities[i] = correspondence.getTarget();
             newCorrespondences[i++] = toStringForGPT(correspondence.getTarget());
         }
-        i = ai.whichComponentIsBetter(toStringForGPT(entity), newCorrespondences);
+        i = ai.whichComponentIsBetter(toStringForGPT(entity), newCorrespondences, 0);
 
         if (i < 0){
             return null;
@@ -194,12 +199,39 @@ public class OntologyAgent {
         return new PotentialCorrespondence(entity, newCorrespondencesEntities[i], this);
     }
 
+    public PotentialCorrespondence whichTargetIsBetter(OntClass entity, Set<PotentialCorrespondence> proposedCorrespondences, OntClass betterCorrespondenceEntity){
+        String[] newCorrespondences = new String[proposedCorrespondences.size()];
+        OntClass[] newCorrespondencesEntities = new OntClass[proposedCorrespondences.size()];
+        int i = 0;
+        int beliefIndex = 0;
+        for (PotentialCorrespondence correspondence : proposedCorrespondences) {
+            newCorrespondencesEntities[i] = correspondence.getTarget();
+            newCorrespondences[i++] = toStringForGPT(correspondence.getTarget());
+            if (betterCorrespondenceEntity == correspondence.getTarget()){
+                beliefIndex = i;
+            }
+        }
+        i = ai.whichComponentIsBetter(toStringForGPT(entity), newCorrespondences, beliefIndex);
+
+        if (i < 0){
+            return null;
+        }
+        if (i >= proposedCorrespondences.size()) {
+            return null;
+        }
+
+        return new PotentialCorrespondence(entity, newCorrespondencesEntities[i], this);
+    }
+
+
     /***
      * End the negotiation. Register the correspondence to the Joint Knowledge Base
      * @param potentialCorrespondence the potential agreed correspondence.
      */
     public void endNegotiation(PotentialCorrespondence potentialCorrespondence){
         // TODO: register the correspondence to the Joint Knowledge Base
+
+        db.markNegotiated(potentialCorrespondence.getSource().getURI(), potentialCorrespondence.getTarget().getURI());
     }
 
     public void Finish() {
@@ -223,6 +255,7 @@ public class OntologyAgent {
         HashSet<OntClass> relevantEntities = new HashSet<>();
         for(String uri : uris){
             relevantEntities.add(ontology.getOntClass(uri));
+            System.out.println(collectionName + " find a entity based on embedding: " + ontology.getOntClass(uri).getLabel(null));
         }
         if(relevantEntities.isEmpty()){
             return null;
@@ -259,6 +292,7 @@ public class OntologyAgent {
 
         boolean result = ai.comepareComponenties(entityString, relevantEntityString);
         if (result){
+            System.out.println(collectionName + " examine embedding and find a entity for potential correspondence: " + relevantEntity.getLabel(null));
             return new PotentialCorrespondence(entity, relevantEntity, this);
         }
         return null;
@@ -271,7 +305,7 @@ public class OntologyAgent {
 
         // 获取并打印类的标签
         String label = ontClass.getLabel(null);
-        System.out.println("Label: " + label);
+//        System.out.println("Label: " + label);
         info += "Label: " + label + "\n";
         //所有的属性
         for (StmtIterator i = ontClass.listProperties(); i.hasNext(); ) {
