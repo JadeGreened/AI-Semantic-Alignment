@@ -27,6 +27,37 @@ public class OpenAI {
             .credential(new AzureKeyCredential(azureOpenaiKey))
             .buildClient();
 
+    public int[] comepareComponenties(String source, String[] targets) {
+        String prompt = "<Problem Definition>  \n" +
+                "In this task, we are givinga) one subject ontology, " +
+                "and b) a set of ontologies for potential alignment in the form of " +
+                "Relation(Subject, SetOntologies), which consist of classes and properties.  \n" +
+                "<Subject Ontology>  \n %s \n \n" + // subject ontology
+                "%s \n \n" +    // ontology in sets
+                "Among all ontologies in the set, select all ontologies that you think " +
+                "having a possibility aligning with the subject ontology? Please only answer " +
+                "with the index of ontology (just the index, for example \"1, 2, 4\"). Answer \"no\" " +
+                "if you think none of them aligns with the subject ontology.";
+        String targetsString = "";
+        for (int i = 0; i < targets.length; i++) {
+            targetsString += String.format("<Ontology %d in set>  \n %s \n \n", i + 1, targets[i]);
+        }
+        String input = String.format(prompt, source, targetsString);
+        String thought = think(input);
+
+        if (thought.contains("no")) {
+            return new int[0];
+        }
+
+        String[] results = thought.split(",");
+        int[] result = new int[results.length];
+        for (int i = 0; i < results.length; i++) {
+            result[i] = Integer.parseInt(results[i].trim()) - 1;
+        }
+
+        return result;
+    }
+
     public boolean comepareComponenties(String component1, String component2){
         String prompt = "<Problem Definition>\n" +
                 "In this task, we are given two ontologies in the form of Relation(Subject, Object), which\n" +
@@ -71,7 +102,7 @@ public class OpenAI {
 
     private String getWhichIsBetterPrompt(String source, String[] targets, int expertBeliefIndex){
         String prompt = "<Problem Definition>\n" +
-                "In this task, we are given a) one subject ontology, " +
+                "In this task, we are giving a) one subject ontology, " +
                 "and b) a set of ontologies for potential alignment in the form of " +
                 "Relation(Subject, SetOntologies), which consists of classes and properties.\n \n" +
                 "<Subject Ontology>  \n %s \n \n" + // subject ontology

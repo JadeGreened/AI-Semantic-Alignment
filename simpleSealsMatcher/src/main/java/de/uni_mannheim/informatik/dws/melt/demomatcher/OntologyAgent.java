@@ -271,12 +271,28 @@ public class OntologyAgent {
      */
     private Set<PotentialCorrespondence> examineRelevantEntities(OntClass entity, Set<OntClass> relevantEntities){
         Set<PotentialCorrespondence> potentialCorrespondences = new HashSet<>();
+
+        OntClass[] relevantEntitiesArray = new OntClass[relevantEntities.size()];
+        int j = 0;
         for (OntClass relevantEntity : relevantEntities) {
-            PotentialCorrespondence potentialCorrespondence = examineRelevantEntity(entity, relevantEntity);
-            if (potentialCorrespondence != null){
-                potentialCorrespondences.add(potentialCorrespondence);
-            }
+            relevantEntitiesArray[j++] = relevantEntity;
         }
+        String[] relevantEntitiesString = new String[relevantEntities.size()];
+        for (int i = 0; i < relevantEntities.size(); i++) {
+            relevantEntitiesString[i] = toStringForGPT(relevantEntitiesArray[i]);
+        }
+        int[] results = ai.comepareComponenties(toStringForGPT(entity), relevantEntitiesString);
+        for (int i = 0; i < results.length; i++) {
+            potentialCorrespondences.add(new PotentialCorrespondence(entity, relevantEntitiesArray[results[i]], this));
+            System.out.println(collectionName + " examine embedding and find a entity for potential correspondence: " + relevantEntitiesArray[results[i]].getLabel(null));
+        }
+
+//        for (OntClass relevantEntity : relevantEntities) {
+//            PotentialCorrespondence potentialCorrespondence = examineRelevantEntity(entity, relevantEntity);
+//            if (potentialCorrespondence != null){
+//                potentialCorrespondences.add(potentialCorrespondence);
+//            }
+//        }
         return potentialCorrespondences;
     }
 
@@ -308,11 +324,11 @@ public class OntologyAgent {
 //        System.out.println("Label: " + label);
         info += "Label: " + label + "\n";
         //所有的属性
-        for (StmtIterator i = ontClass.listProperties(); i.hasNext(); ) {
-            Statement stmt = i.next();
-            info += "Property: " + stmt.getPredicate().getLocalName() + "\n";
-            info += "Value: " + stmt.getObject().toString() + "\n";
-        }
+//        for (StmtIterator i = ontClass.listProperties(); i.hasNext(); ) {
+//            Statement stmt = i.next();
+//            info += "Property: " + stmt.getPredicate().getLocalName() + "\n";
+//            info += "Value: " + stmt.getObject().toString() + "\n";
+//        }
         return info;
     }
 }
