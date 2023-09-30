@@ -137,9 +137,6 @@ public class OntologyAgent {
      * @return the selected correspondence. Null if something wrong.
      */
     public PotentialCorrespondence whichTargetIsBetter(OntClass entity, Set<PotentialCorrespondence> proposedCorrespondences, OntClass betterCorrespondenceEntity){
-        // TODO: rethink how to introduce more information from the source side
-        //  so that source agreement can makes sense.
-
         String[] correspondences = new String[proposedCorrespondences.size()];
         OntClass[] newCorrespondencesEntities = new OntClass[proposedCorrespondences.size()];
         int i = 0;

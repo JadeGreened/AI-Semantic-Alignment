@@ -30,7 +30,8 @@ public class MyMatcher extends MatcherYAAAJena {
         setup(source, target, isOnline);
 
         Alignment alignment = new Alignment();
-        int count = 0;
+        int alignmentCount = 0;
+        int negotiationRound = 0;
 
         // start alignment
         // if there is at least one agent has unaligned components
@@ -40,16 +41,18 @@ public class MyMatcher extends MatcherYAAAJena {
                 Correspondence correspondence = startNegotiationForOneEntity(sourceAgent, targetAgent);
                 if (correspondence != null){
                     alignment.add(correspondence);
-                    print("" + ++count);
+                    print("Current alignment count: " + ++alignmentCount + ". Max pair count: 3304. Reference count: 1516.");
                 }
+                print("Current negotiation round: " + ++negotiationRound + ". Max round: 6048 = 3304 + 2744. Reference round: 1516.");
             }
             // if target agent has unaligned components
             if (!targetAgent.isFinished()) {
                 Correspondence correspondence = startNegotiationForOneEntity(targetAgent, sourceAgent);
                 if (correspondence != null){
                     alignment.add(correspondence);
-                    print("" + ++count);
+                    print("Current alignment count: " + ++alignmentCount + ". Max pair count: 3304. Reference count: 1516.");
                 }
+                print("Current negotiation round: " + ++negotiationRound + ". Max round: 6048 = 3304 + 2744. Reference round: 1516.");
             }
         }
 
@@ -114,11 +117,10 @@ public class MyMatcher extends MatcherYAAAJena {
 //        PotentialCorrespondence agreement = source.checkProposal(entity, proposedCorrespondences, betterCorrespondence, target);
         if (agreement == null){
             print(source.getCollectionName() + " dont' think any entity proposed by " + target.getCollectionName() + " is good for " + entity.getLabel(null) + ". It looked at ." + betterCorrespondence.getTarget().getLabel(null));
+            source.markNegotiated(entity);
             return null;
         }
         print(source.getCollectionName() + " make agreement: " + agreement.getTarget().getLabel(null));
-
-        // TODO: during the discussion, there would be components pairs discussed. Store the agreed result in the database.
 
         source.markNegotiated(agreement.getSource());
         target.markNegotiated(agreement.getTarget());
