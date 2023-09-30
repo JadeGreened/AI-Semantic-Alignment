@@ -45,7 +45,7 @@ public class OpenAI {
         String input = String.format(prompt, source, targetsString);
         String thought = think(input);
 
-        if (thought.contains("no")) {
+        if (thought.toLowerCase().contains("no")) {
             return new int[0];
         }
 

@@ -35,45 +35,20 @@ import org.xml.sax.SAXException;
 
 public class Main {
     public static void main(String[] args) throws IOException {
-//        uploadEmbeddingsFromFileToWeaviate("source.json", "Source");
-//        uploadEmbeddingsFromFileToWeaviate("target.json", "Target");
-
-//        runMatcherWithLocalData();
-
-        testOnOneEntityNegotiation();
+//        initDatabase();
+        runMatcherWithLocalData();
 
 //        testOntClassNullURL();
 //        testOntModelProperties();
 //        testMatcherOnline();
     }
 
-    private static void testOnOneEntityNegotiation(){
+    private static void initDatabase() throws IOException {
+        uploadEmbeddingsFromFileToWeaviate("source.json", "Source");
+        uploadEmbeddingsFromFileToWeaviate("target.json", "Target");
+    }
 
-//        OntModel source = ModelFactory.createOntologyModel(OntModelSpec.OWL_DL_MEM);
-//        OntModel target = ModelFactory.createOntologyModel(OntModelSpec.OWL_DL_MEM);
-//        Alignment reference;
-//        // for windows
-////        source.read("D:\\WorkSpace\\projects\\sealsproj\\simpleSealsMatcher\\src\\main\\java\\DataSet\\human.owl");
-////        target.read("D:\\WorkSpace\\projects\\sealsproj\\simpleSealsMatcher\\src\\main\\java\\DataSet\\mouse.owl");
-//        // for shiyao
-//        source.read("simpleSealsMatcher/src/main/java/DataSet/human.owl");
-//        target.read("simpleSealsMatcher/src/main/java/DataSet/mouse.owl");
-//        try {
-//            reference = AlignmentParser.parse("simpleSealsMatcher/src/main/java/DataSet/reference.rdf");
-//        } catch (SAXException e) {
-//            throw new RuntimeException(e);
-//        } catch (IOException e) {
-//            throw new RuntimeException(e);
-//        }
-//
-//        MyMatcher myMatcher = new MyMatcher();
-//        Alignment alignment;
-//        try {
-//            alignment = myMatcher.matchLocally(source, target);
-//        } catch (Exception e) {
-//            throw new RuntimeException(e);
-//        }
-
+    private static void runMatcherWithLocalData(){
         File sourceFile = new File("simpleSealsMatcher/src/main/java/DataSet/human.owl");
         File targetFile = new File("simpleSealsMatcher/src/main/java/DataSet/mouse.owl");
         File referenceFile = new File("simpleSealsMatcher/src/main/java/DataSet/reference.owl");
@@ -134,28 +109,6 @@ public class Main {
         }
     }
 
-    private static void uploadEmbeddingsFromFile(String fileName, String collectionName) throws IOException {
-        FileReader fileReader = new FileReader(fileName);
-        JSONReader jsonReader = new JSONReader(fileReader);
-
-        ArrayList<JSONObject> rows = new ArrayList<>();
-        while(fileReader.ready()){
-            JSONObject var = jsonReader.readObject(JSONObject.class);
-            if (var.get("uri") == null){
-                continue;
-            }
-            ArrayList<Float> vector = new ArrayList<>();
-            for (Object bigDecimal : (JSONArray) var.get("vector")) {
-                vector.add(((BigDecimal) bigDecimal).floatValue());
-            }
-            var.put("vector", vector);
-            rows.add(var);
-        }
-
-        Zilliz db = new Zilliz(collectionName).initCollection();
-        db.insert(rows);
-    }
-
     private static void uploadEmbeddingsFromFileToWeaviate(String fileName, String collectionName) throws IOException {
         print("uploading embeddings to weaviate collection " + collectionName + " ...");
         FileReader fileReader = new FileReader(fileName);
@@ -189,37 +142,6 @@ public class Main {
 
 //        Zilliz db = new Zilliz(collectionName).initCollection();
 //        db.insert(rows);
-    }
-
-    /***
-     * Run the matcher with local resource.
-     */
-    private static void runMatcherWithLocalData() {
-
-        OntModel source = ModelFactory.createOntologyModel(OntModelSpec.OWL_DL_MEM);
-        OntModel target = ModelFactory.createOntologyModel(OntModelSpec.OWL_DL_MEM);
-        Alignment reference;
-        // for windows
-//        source.read("D:\\WorkSpace\\projects\\sealsproj\\simpleSealsMatcher\\src\\main\\java\\DataSet\\human.owl");
-//        target.read("D:\\WorkSpace\\projects\\sealsproj\\simpleSealsMatcher\\src\\main\\java\\DataSet\\mouse.owl");
-        // for shiyao
-        source.read("C:\\Users\\zhang\\Documents\\Repo\\AI-Semantic-Alignment\\simpleSealsMatcher\\src\\main\\java\\DataSet\\human.owl");
-        target.read("C:\\Users\\zhang\\Documents\\Repo\\AI-Semantic-Alignment\\simpleSealsMatcher\\src\\main\\java\\DataSet\\mouse.owl");
-        try {
-            reference = AlignmentParser.parse("C:\\Users\\zhang\\Documents\\Repo\\AI-Semantic-Alignment\\simpleSealsMatcher\\src\\main\\java\\DataSet\\reference.rdf");
-        } catch (SAXException e) {
-            throw new RuntimeException(e);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-
-        MyMatcher myMatcher = new MyMatcher();
-        Alignment alignment;
-        try {
-            alignment = myMatcher.match(source, target, null, null);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
     }
 
     /***
