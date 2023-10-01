@@ -3,6 +3,7 @@ import com.google.gson.internal.LinkedTreeMap;
 import io.weaviate.client.Config;
 import io.weaviate.client.WeaviateClient;
 import io.weaviate.client.base.Result;
+import io.weaviate.client.v1.data.model.WeaviateObject;
 import io.weaviate.client.v1.filters.Operator;
 import io.weaviate.client.v1.filters.WhereFilter;
 import io.weaviate.client.v1.graphql.model.GraphQLResponse;
@@ -10,9 +11,16 @@ import io.weaviate.client.v1.graphql.query.argument.NearVectorArgument;
 import io.weaviate.client.v1.graphql.query.fields.Field;
 import io.weaviate.client.v1.misc.model.Meta;
 import io.weaviate.client.v1.schema.model.WeaviateClass;
+import org.apache.jena.ontology.OntClass;
+import org.apache.jena.ontology.OntModel;
+import org.apache.jena.ontology.OntModelSpec;
+import org.apache.jena.rdf.model.ModelFactory;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /***
  * @See https://weaviate.io/developers/weaviate/api/graphql for more information.
@@ -24,6 +32,50 @@ public class Weaviate {
     public Weaviate(){}
     public Weaviate(String collectionName){
         this.collectionName = collectionName;
+    }
+
+    public static void main(String[] args){
+        findHowManyEntryThereAreInTheDatabaseForEachClass();
+    }
+
+    private static void findHowManyEntryThereAreInTheDatabaseForEachClass() {
+        OntModel source = ModelFactory.createOntologyModel(OntModelSpec.OWL_DL_MEM);
+        source.read("simpleSealsMatcher/src/main/java/DataSet/human.owl");
+        int count = 0;
+        for (OntClass var : source.listClasses().toList()){
+            Field uriField = Field.builder().name("uri").build();
+            Field netotiatedField = Field.builder().name("isNegotiated").build();
+            Field _additional = Field.builder()
+                    .name("_additional")
+                    .fields(new Field[]{
+                            Field.builder().name("vector").build(),
+                            Field.builder().name("id").build(),
+                    }).build();
+            WhereFilter where = WhereFilter.builder()
+                    .path(new String[]{ "uri" })
+                    .operator(Operator.Equal)
+                    .valueString(var.getURI())
+                    .build();
+
+            Result<GraphQLResponse> result = client.graphQL().get()
+                    .withClassName("Target")
+                    .withFields(uriField, netotiatedField, _additional)
+                    .withWhere(where)
+                    .run();
+            if (result.hasErrors()) {
+                continue;
+            }
+            List<Map> list = (List<Map>)((Map) ((Map) result.getResult().getData()).get("Get")).get("Source");
+            if (list == null){
+                continue;
+            }
+            count++;
+            if (list.size() != 1){
+                System.out.println(list.get(0).get("uri") + " " + count);
+            }
+        }
+        System.out.println(count);
+        return;
     }
 
     public String getUriForNotNegotiated(){
@@ -158,10 +210,16 @@ public class Weaviate {
     }
 
     private String getId(String uri){
+        Result<GraphQLResponse> result = get(uri);
+        return (String) ((LinkedTreeMap) ((ArrayList<LinkedTreeMap>) ((LinkedTreeMap) ((LinkedTreeMap) result.getResult().getData()).get("Get")).get(collectionName)).get(0).get("_additional")).get("id");
+    }
+
+    private Result<GraphQLResponse> get(String uri){
         Field _additional = Field.builder()
                 .name("_additional")
                 .fields(new Field[]{
                         Field.builder().name("id").build(),
+                        Field.builder().name("vector").build(),
                 }).build();
         WhereFilter where = WhereFilter.builder()
                 .path(new String[]{ "uri" })
@@ -178,6 +236,6 @@ public class Weaviate {
             System.out.println(result.getError());
             return null;
         }
-        return (String) ((LinkedTreeMap) ((ArrayList<LinkedTreeMap>) ((LinkedTreeMap) ((LinkedTreeMap) result.getResult().getData()).get("Get")).get(collectionName)).get(0).get("_additional")).get("id");
+        return result;
     }
 }

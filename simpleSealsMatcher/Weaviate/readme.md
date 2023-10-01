@@ -16,7 +16,7 @@ However, if you want to run it in the terminal, make sure you're in this directo
 
 You will need to upload embeddings to the database everytime you start a new instance.
 
-Note: The database will remain the same even if you restart the docker container. However, if you delete the container, the database will be deleted as well.
+Note: The database will remain the same even if you restart the docker container. However, if you delete the container and volume, the database will be deleted as well.
 
 Therefore, it's hightly recommended to have a good naming convention for the collection for different dataset. For example "name_of_the_dataset-name_of_the_agent". This way, you can keep all the embeddings while not mass up with your database.
 

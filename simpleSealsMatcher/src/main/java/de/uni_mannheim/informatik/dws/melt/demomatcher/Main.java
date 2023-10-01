@@ -43,6 +43,8 @@ public class Main {
 //        testMatcherOnline();
     }
 
+
+
     private static void initDatabase() throws IOException {
         uploadEmbeddingsFromFileToWeaviate("source.json", "Source");
         uploadEmbeddingsFromFileToWeaviate("target.json", "Target");
