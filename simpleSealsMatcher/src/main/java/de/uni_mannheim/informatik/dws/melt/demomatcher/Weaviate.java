@@ -48,7 +48,11 @@ public class Weaviate {
             System.out.println(result.getError());
             return null;
         }
-        return (String) ((ArrayList<LinkedTreeMap>) ((LinkedTreeMap) ((LinkedTreeMap) result.getResult().getData()).get("Get")).get(collectionName)).get(0).get("uri");
+        try{
+            return (String) ((ArrayList<LinkedTreeMap>) ((LinkedTreeMap) ((LinkedTreeMap) result.getResult().getData()).get("Get")).get(collectionName)).get(0).get("uri");
+        }catch (IndexOutOfBoundsException e){
+            return null;
+        }
     }
 
     public ArrayList<Double> getEmbedding(String uri){
