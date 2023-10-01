@@ -85,7 +85,7 @@ public class OntologyAgent {
      */
     public OntClass startNegotiation(){
         String uri = db.getUriForNotNegotiated();
-        if (uri.isEmpty()){
+        if (uri == null || uri.isEmpty()){
             return null;
         }
         return ontology.getOntClass(uri);

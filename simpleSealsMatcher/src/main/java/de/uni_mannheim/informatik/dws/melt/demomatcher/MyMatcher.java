@@ -37,7 +37,7 @@ public class MyMatcher extends MatcherYAAAJena {
 
         // start alignment
         // if there is at least one agent has unaligned components
-        while (!sourceAgent.isFinished() || !targetAgent.isFinished()){
+        while (true){
             // if source agent has unaligned components
             if (!sourceAgent.isFinished()) {
                 Correspondence correspondence = startNegotiationForOneEntity(sourceAgent, targetAgent);
@@ -47,6 +47,9 @@ public class MyMatcher extends MatcherYAAAJena {
                 }
                 print("Current negotiation round: " + ++negotiationRound + ". Max round: 6048 = 3304 + 2744. Reference round: 1516.");
             }
+            else {
+                break;
+            }
             // if target agent has unaligned components
             if (!targetAgent.isFinished()) {
                 Correspondence correspondence = startNegotiationForOneEntity(targetAgent, sourceAgent);
@@ -55,6 +58,9 @@ public class MyMatcher extends MatcherYAAAJena {
                     print("Current alignment count: " + ++alignmentCount + ". Max pair count: 3304. Reference count: 1516.");
                 }
                 print("Current negotiation round: " + ++negotiationRound + ". Max round: 6048 = 3304 + 2744. Reference round: 1516.");
+            }
+            else {
+                break;
             }
         }
 
