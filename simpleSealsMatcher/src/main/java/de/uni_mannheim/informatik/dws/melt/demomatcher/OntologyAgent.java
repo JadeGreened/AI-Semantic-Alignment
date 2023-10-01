@@ -207,7 +207,7 @@ public class OntologyAgent {
             relevantEntities.add(tmp);
             logger += tmp.getLabel(null) + ", ";
         }
-        System.out.println(collectionName + " find entities based on embedding: " + logger);
+//        System.out.println(collectionName + " find entities based on embedding: " + logger);
         if(relevantEntities.isEmpty()){
             return null;
         }

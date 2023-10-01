@@ -53,7 +53,7 @@ public class Main {
     private static void runMatcherWithLocalData(){
         File sourceFile = new File("simpleSealsMatcher/src/main/java/DataSet/human.owl");
         File targetFile = new File("simpleSealsMatcher/src/main/java/DataSet/mouse.owl");
-        File referenceFile = new File("simpleSealsMatcher/src/main/java/DataSet/reference.owl");
+        File referenceFile = new File("simpleSealsMatcher/src/main/java/DataSet/reference.rdf");
         // let's execute our matcher on the OAEI Anatomy test case
         ExecutionResultSet ers = Executor.run(
                 new TestCase("localtest", sourceFile.toURI(), targetFile.toURI(), referenceFile.toURI(),
