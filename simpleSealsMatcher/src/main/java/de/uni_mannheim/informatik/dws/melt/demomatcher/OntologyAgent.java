@@ -175,17 +175,6 @@ public class OntologyAgent {
         return new PotentialCorrespondence(entity, newCorrespondencesEntities[i], this);
     }
 
-    public void test(){
-
-//        // TODO: find relevant entities of the given entities
-//        Set<PotentialCorrespondence> relevantCorrespondencesForEntity = proposeCorrespondence(entity, getEmbedding(entity));
-//        String[] relevantCorrespondences = new String[relevantCorrespondencesForEntity.size()];
-//        i = 0;
-//        for (PotentialCorrespondence correspondence : relevantCorrespondencesForEntity) {
-//            relevantCorrespondences[i++] = toStringForGPT(correspondence.getTarget());
-//        }
-    }
-
     public void markNegotiated(OntClass entity){
         db.markNegotiated(entity.getURI());
     }
