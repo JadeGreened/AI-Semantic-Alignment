@@ -1,0 +1,5 @@
+Track,Track Version,Test Case,Matcher,Type,Precision (P),Recall (R),Residual Recall (R+),F1,# of TP,# of FP,# of FN,# of Correspondences,Time,Time (HH:MM:SS)
+,,localtest,MyMatcher,ALL,0.282711508,0.354881266,0.354881266,0.314711904,538,1365,978,1903,9.15898E+12,2:32:38
+,,localtest,MyMatcher,CLASSES,0,0,0,0,0,803,0,803,-,-
+,,localtest,MyMatcher,PROPERTIES,0,0,0,0,0,0,0,0,-,-
+,,localtest,MyMatcher,INSTANCES,0,0,0,0,0,0,0,0,-,-

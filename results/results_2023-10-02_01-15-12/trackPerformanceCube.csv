@@ -1,0 +1,5 @@
+Track,Track Version,Matcher,Type,Macro Precision (P),Macro Recall (R),Residual Macro Recall (R+),Macro F1,Micro Precision (P),Micro Recall (R),Residual Micro Recall (R+),Micro F1,"# of TP","# of Residual TP","# of FP","# of FN","# of Correspondences",Total Runtime,Total Runtime (HH:MM:SS)
+"",,MyMatcher,ALL,0.28271150814503415,0.3548812664907652,0.3548812664907652,0.3147119040655162,0.28271150814503415,0.3548812664907652,0.3548812664907652,0.3147119040655162,538,538,1365,978,1903,9158983380400,02:32:38
+"",,MyMatcher,CLASSES,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0,0,803,0,803,-,-
+"",,MyMatcher,PROPERTIES,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0,0,0,0,0,-,-
+"",,MyMatcher,INSTANCES,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0,0,0,0,0,-,-

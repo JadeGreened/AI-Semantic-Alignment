@@ -11,6 +11,7 @@ import de.uni_mannheim.informatik.dws.melt.matching_eval.ExecutionResultSet;
 import de.uni_mannheim.informatik.dws.melt.matching_eval.Executor;
 import de.uni_mannheim.informatik.dws.melt.matching_eval.evaluator.EvaluatorCSV;
 import de.uni_mannheim.informatik.dws.melt.yet_another_alignment_api.AlignmentParser;
+import de.uni_mannheim.informatik.dws.melt.yet_another_alignment_api.Correspondence;
 import io.weaviate.client.base.Result;
 import io.weaviate.client.v1.data.model.WeaviateObject;
 import io.weaviate.client.v1.filters.Operator;
@@ -21,11 +22,13 @@ import io.weaviate.client.v1.schema.model.WeaviateClass;
 import org.apache.jena.ontology.*;
 import org.apache.jena.rdf.model.ModelFactory;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
@@ -34,14 +37,91 @@ import org.apache.jena.ontology.OntModel;
 import org.xml.sax.SAXException;
 
 public class Main {
-    public static void main(String[] args) throws IOException {
-        initDatabase();
-        runMatcherWithLocalData();
+    public static void main(String[] args) throws IOException, SAXException {
+//        initDatabase();
+//        runMatcherWithLocalData();
 
 //        testOntClassNullURL();
 //        testOntModelProperties();
 //        testMatcherOnline();
 //        testOboInOwl();
+        calculateStaticsManually();
+    }
+
+    private static void calculateStaticsManually() throws IOException, SAXException {
+        File referenceFile = new File("simpleSealsMatcher/src/main/java/DataSet/reference.rdf");
+        List<List<String>> alignment = new ArrayList<>();
+        try (BufferedReader br = new BufferedReader(new FileReader("alignment.csv"))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                if (line.startsWith("s")){
+                    continue;
+                }
+                String[] values = line.split(",");
+                alignment.add(Arrays.asList(values));
+            }
+        }
+
+        Alignment reference = AlignmentParser.parse(referenceFile);
+
+        Alignment tp = new Alignment();
+        Alignment tn = new Alignment();
+        Alignment fp = new Alignment();
+        Alignment fn = new Alignment();
+        for (List<String> myVar : alignment){
+            String sourceUri = myVar.get(0).trim();
+            String targetUri = myVar.get(1).trim();
+            double confidence = Double.parseDouble(myVar.get(2).trim());
+            for (Correspondence referenceVar : reference){
+                if (referenceVar.getEntityOne().trim().equals(sourceUri)
+                        && referenceVar.getEntityTwo().trim().equals(targetUri)){
+                    if (referenceVar.getConfidence() == confidence){
+                        tp.add(new Correspondence(sourceUri, targetUri, confidence));
+                    } else if (referenceVar.getConfidence() > 0.5){
+                        tn.add(new Correspondence(sourceUri, targetUri, confidence));
+                    } else {
+                        fp.add(new Correspondence(sourceUri, targetUri, confidence));
+                    }
+                    reference.remove(referenceVar);
+                    break;
+                }
+                if (referenceVar.getEntityOne().trim().equals(targetUri)
+                        && referenceVar.getEntityTwo().trim().equals(sourceUri)){
+                    if (referenceVar.getConfidence() == confidence){
+                        tp.add(new Correspondence(sourceUri, targetUri, confidence));
+                    } else if (referenceVar.getConfidence() > 0.5){
+                        tn.add(new Correspondence(sourceUri, targetUri, confidence));
+                    } else {
+                        fp.add(new Correspondence(sourceUri, targetUri, confidence));
+                    }
+                    reference.remove(referenceVar);
+                    break;
+                }
+            }
+        }
+
+        System.out.println(reference.size());
+        // those in reference but not in alignment
+        for (Correspondence var : reference){
+            if (var.getConfidence() > 0.5){
+                tn.add(var);
+            } else {
+                fn.add(var);
+            }
+        }
+
+        System.out.println("tp: " + tp.size() + ", tn: " + tn.size() + ", fp: " + fp.size() + ", fn: " + fn.size());
+        // tp: 1010, tn: 506, fp: 0, fn: 0
+
+        print(alignment.size() - tp.size() - tn.size() + " ");
+        //338
+
+        int falseNegative = alignment.size() - tp.size() - tn.size();
+
+        print("precision: " + (double) tp.size() / (tp.size() + fp.size()));    // 1.0
+        print("recall: " + (double) tp.size() / (tp.size() + falseNegative));   // 0.749258
+        print("f1 score: " + (double) 2 * tp.size() / (2 * tp.size() + fp.size() + falseNegative)); // 0.856658
+
     }
 
     private static void testOboInOwl() {
