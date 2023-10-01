@@ -300,7 +300,7 @@ public class OntologyAgent {
 
             }
         }
-        if (subInfo){
+        if (true){
             info += "================ Relevant entity of this ontology ================\n";
             info += getSubInfo(subs);
         }

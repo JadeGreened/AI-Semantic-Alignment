@@ -60,11 +60,6 @@ public class MyMatcher extends MatcherYAAAJena {
 
         // TODO: resolve attack graph
 
-        try {
-            alignment.serializeToCSV(new File("alignment.csv"));
-        } catch (IOException e) {
-            print("Failed to save alignment to csv file. Error: " + e.getMessage());
-        }
 
         // clean database
         clean();
