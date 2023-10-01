@@ -246,6 +246,9 @@ public class OntologyAgent {
         int[] results = ai.comepareComponenties(toStringForGPT(entity), relevantEntitiesString);
         String logger = "";
         for (int i = 0; i < results.length; i++) {
+            if (results[i] < 0 || results[i] >= relevantEntities.size()){
+                continue;
+            }
             potentialCorrespondences.add(new PotentialCorrespondence(entity, relevantEntitiesArray[results[i]], this));
             logger += relevantEntitiesArray[results[i]].getLabel(null) + ", ";
         }
