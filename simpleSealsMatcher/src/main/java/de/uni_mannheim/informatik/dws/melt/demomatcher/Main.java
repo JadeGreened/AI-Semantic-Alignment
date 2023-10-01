@@ -41,8 +41,18 @@ public class Main {
 //        testOntClassNullURL();
 //        testOntModelProperties();
 //        testMatcherOnline();
+//        testOboInOwl();
     }
 
+    private static void testOboInOwl() {
+        OntModel source = ModelFactory.createOntologyModel(OntModelSpec.OWL_DL_MEM);
+        source.read("simpleSealsMatcher/src/main/java/DataSet/human.owl");
+//        for (OntClass var : source.listClasses().toList()){
+//            print(var.getURI());
+//        }
+        OntClass var = source.getOntClass("http://human.owl#NCI_C12499");
+        print(OntologyAgent.toStringForGPT(var, true));
+    }
 
 
     private static void initDatabase() throws IOException {
@@ -161,7 +171,7 @@ public class Main {
 
     private static void testOntModelProperties(){
         OntModel source = ModelFactory.createOntologyModel(OntModelSpec.OWL_DL_MEM);
-        source.read("/Users/shiyaozhang/Developer/AI-Semantic-Alignment/simpleSealsMatcher/src/main/java/DataSet/human.owl");
+        source.read("simpleSealsMatcher/src/main/java/DataSet/human.owl");
 
         OntClass var = source.listClasses().next();
         print("var==================");

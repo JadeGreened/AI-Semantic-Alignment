@@ -133,7 +133,7 @@ public class Weaviate {
         return (ArrayList<Double>) ((LinkedTreeMap) ((ArrayList<LinkedTreeMap>) ((LinkedTreeMap) ((LinkedTreeMap) result.getResult().getData()).get("Get")).get(collectionName)).get(0).get("_additional")).get("vector");
     }
 
-    public ArrayList<String> getUrisNotNegotiated(ArrayList<Double> embedding, double threshold) {
+    public ArrayList<String> getUrisNotNegotiated(ArrayList<Double> embedding, double threshold, boolean all) {
         Float[] embeddingFloat = new Float[1536];
         for (int i = 0; i < embedding.size(); i++) {
             embeddingFloat[i] = embedding.get(i).floatValue();
@@ -149,7 +149,7 @@ public class Weaviate {
         WhereFilter where = WhereFilter.builder()
                 .path(new String[]{ "isNegotiated" })
                 .operator(Operator.Equal)
-                .valueBoolean(false)
+                .valueBoolean(all)
                 .build();
         NearVectorArgument nearVector = NearVectorArgument.builder()
                 .vector(embeddingFloat)

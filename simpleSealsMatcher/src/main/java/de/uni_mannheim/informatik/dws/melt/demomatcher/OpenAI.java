@@ -175,7 +175,7 @@ public class OpenAI {
         boolean flag = false;
         while(!flag){
             try{
-                chatCompletions = client.getChatCompletions("gpt-4", new ChatCompletionsOptions(chatMessages));
+                chatCompletions = client.getChatCompletions("gpt-4-32k", new ChatCompletionsOptions(chatMessages));
                 flag = true;
             } catch (HttpResponseException e){
 //                System.out.println(e.getMessage());

@@ -103,7 +103,7 @@ public class OntologyAgent {
      * @return the set of all entities that are relevant to the given entity. null if no relevant entities.
      */
     public Set<PotentialCorrespondence> proposeCorrespondence(OntClass entity, ArrayList<Double> embedding) {
-        Set<OntClass> relevantEntities = findAllRelevantNotNegotiatedEntities(embedding);
+        Set<OntClass> relevantEntities = findAllRelevantNotNegotiatedEntities(embedding, false);
         if (relevantEntities == null){
             return null;
         }
@@ -141,9 +141,14 @@ public class OntologyAgent {
         OntClass[] newCorrespondencesEntities = new OntClass[proposedCorrespondences.size()];
         int i = 0;
         int beliefIndex = 0;
+        boolean targetAsk = true;
+        // if this is round 3, the source agent examine proposals from the target agent
+        if (betterCorrespondenceEntity != null){
+            targetAsk = false;
+        }
         for (PotentialCorrespondence correspondence : proposedCorrespondences) {
             newCorrespondencesEntities[i] = correspondence.getTarget();
-            correspondences[i++] = toStringForGPT(correspondence.getTarget());
+            correspondences[i++] = toStringForGPT(correspondence.getTarget(), targetAsk);
             if (betterCorrespondenceEntity == correspondence.getTarget()){
                 beliefIndex = i;
             }
@@ -152,18 +157,18 @@ public class OntologyAgent {
         String[] relevantEntities = null;
         if (betterCorrespondenceEntity != null){
             // find all entities that are relevant to the given entity
-            Set<OntClass> relevantEntitiesSet = findAllRelevantNotNegotiatedEntities(getEmbedding(entity));
+            Set<OntClass> relevantEntitiesSet = findAllRelevantNotNegotiatedEntities(getEmbedding(entity), true);
             // push entities to string array
             if (relevantEntitiesSet != null){
                 relevantEntities = new String[relevantEntitiesSet.size()];
                 i = 0;
                 for (OntClass relevantEntity : relevantEntitiesSet) {
-                    relevantEntities[i++] = toStringForGPT(relevantEntity);
+                    relevantEntities[i++] = toStringForGPT(relevantEntity, true);
                 }
             }
         }
 
-        i = ai.whichComponentIsBetter(toStringForGPT(entity), correspondences, beliefIndex, relevantEntities);
+        i = ai.whichComponentIsBetter(toStringForGPT(entity, true), correspondences, beliefIndex, relevantEntities);
 
         if (i < 0){
             return null;
@@ -192,8 +197,8 @@ public class OntologyAgent {
      * @param embedding embedding of the given entity
      * @return the set of all entities that are relevant to the given entity. Null if no relevant entities.
      */
-    private Set<OntClass> findAllRelevantNotNegotiatedEntities(ArrayList<Double> embedding){
-        ArrayList<String> uris = db.getUrisNotNegotiated(embedding, SIMILARITY_THRESHOLD);
+    private Set<OntClass> findAllRelevantNotNegotiatedEntities(ArrayList<Double> embedding, boolean all){
+        ArrayList<String> uris = db.getUrisNotNegotiated(embedding, SIMILARITY_THRESHOLD, all);
         if (uris == null){
             return null;
         }
@@ -230,9 +235,9 @@ public class OntologyAgent {
         }
         String[] relevantEntitiesString = new String[relevantEntities.size()];
         for (int i = 0; i < relevantEntities.size(); i++) {
-            relevantEntitiesString[i] = toStringForGPT(relevantEntitiesArray[i]);
+            relevantEntitiesString[i] = toStringForGPT(relevantEntitiesArray[i], true);
         }
-        int[] results = ai.comepareComponenties(toStringForGPT(entity), relevantEntitiesString);
+        int[] results = ai.comepareComponenties(toStringForGPT(entity, true), relevantEntitiesString);
         String logger = "";
         for (int i = 0; i < results.length; i++) {
             if (results[i] < 0 || results[i] >= relevantEntities.size()){
@@ -259,8 +264,8 @@ public class OntologyAgent {
      * @return the correspondence of the given entity and the given relevant entity. If the relevance is not enough, return null
      */
     private PotentialCorrespondence examineRelevantEntity(OntClass entity, OntClass relevantEntity){
-        String entityString = toStringForGPT(entity);
-        String relevantEntityString = toStringForGPT(relevantEntity);
+        String entityString = toStringForGPT(entity, true);
+        String relevantEntityString = toStringForGPT(relevantEntity, true);
 
         boolean result = ai.comepareComponenties(entityString, relevantEntityString);
         if (result){
@@ -270,21 +275,77 @@ public class OntologyAgent {
         return null;
     }
 
-    private String toStringForGPT(OntClass ontClass){
-        String info = "";
-        String uri = ontClass.getURI();
-        info += "Class  URI: " + uri + "\n";
+    public static String toStringForGPT(OntClass ontClass, boolean subInfo){
+        if (ontClass == null){
+            return "";
+        }
+        String info = "URI: " + ontClass.getURI() + "\n";
+        info += "Label: " + ontClass.getLabel(null) + "\n";
+        info += "Local name: " + ontClass.getLocalName() + "\n";
+        info += "Comment: " + ontClass.getComment(null) + "\n";
 
-        // 获取并打印类的标签
-        String label = ontClass.getLabel(null);
-//        System.out.println("Label: " + label);
-        info += "Label: " + label + "\n";
+
+        HashSet<OntClass> subs = new HashSet<>();
         //所有的属性
-//        for (StmtIterator i = ontClass.listProperties(); i.hasNext(); ) {
-//            Statement stmt = i.next();
-//            info += "Property: " + stmt.getPredicate().getLocalName() + "\n";
-//            info += "Value: " + stmt.getObject().toString() + "\n";
-//        }
+        for (StmtIterator i = ontClass.listProperties(); i.hasNext(); ) {
+            Statement stmt = i.next();
+            String value = stmt.getObject().toString();
+            if (value.startsWith("http")){
+                var sub = ontClass.getOntModel().getOntClass(value);
+                if (sub != null){
+                    info += "Property: " + stmt.getPredicate().getLocalName() + "\n";
+                    info += "Value: " + value + "\n\n";
+                    subs.add(sub);
+                }
+
+            }
+        }
+        if (subInfo){
+            info += "================ Relevant entity of this ontology ================\n";
+            info += getSubInfo(subs);
+        }
+
+        return info;
+    }
+
+    private static String getSubInfo(Set<OntClass> ontClassSet){
+        if (ontClassSet == null){
+            return "";
+        }
+        String info = "";
+        for (OntClass ontClass : ontClassSet) {
+            info += toString(ontClass);
+        }
+        return info;
+    }
+
+    private static String toString(OntClass ontClass){
+        if (ontClass == null){
+            return "";
+        }
+        String info = "Label: " + ontClass.getLabel(null) + "\n";
+        info += "URI: " + ontClass.getURI() + "\n";
+        info += "Local name: " + ontClass.getLocalName() + "\n";
+        info += "Comment: " + ontClass.getComment(null) + "\n";
+
+
+        HashSet<OntClass> subs = new HashSet<>();
+        //所有的属性
+        for (StmtIterator i = ontClass.listProperties(); i.hasNext(); ) {
+            Statement stmt = i.next();
+            String value = stmt.getObject().toString();
+            if (value.startsWith("http")){
+                var sub = ontClass.getOntModel().getOntClass(value);
+                if (sub != null){
+                    info += "Property: " + stmt.getPredicate().getLocalName() + "\n";
+                    info += "Value: " + value + "\n\n";
+                    subs.add(sub);
+                }
+
+            }
+        }
+//        info += getSubInfo(subs);
+
         return info;
     }
 }
