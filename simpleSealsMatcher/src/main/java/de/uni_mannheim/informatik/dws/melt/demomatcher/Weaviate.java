@@ -35,10 +35,11 @@ public class Weaviate {
     }
 
     public static void main(String[] args){
-        findHowManyEntryThereAreInTheDatabaseForEachClass();
+        findHowManyEntryThereAreInTheDatabaseForEachClass("Source");
+        findHowManyEntryThereAreInTheDatabaseForEachClass("Target");
     }
 
-    private static void findHowManyEntryThereAreInTheDatabaseForEachClass() {
+    private static void findHowManyEntryThereAreInTheDatabaseForEachClass(String testCollectionName) {
         OntModel source = ModelFactory.createOntologyModel(OntModelSpec.OWL_DL_MEM);
         source.read("simpleSealsMatcher/src/main/java/DataSet/human.owl");
         int count = 0;
@@ -58,7 +59,7 @@ public class Weaviate {
                     .build();
 
             Result<GraphQLResponse> result = client.graphQL().get()
-                    .withClassName("Target")
+                    .withClassName(testCollectionName)
                     .withFields(uriField, netotiatedField, _additional)
                     .withWhere(where)
                     .run();
