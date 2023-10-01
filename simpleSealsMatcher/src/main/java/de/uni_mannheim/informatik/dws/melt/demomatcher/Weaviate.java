@@ -114,6 +114,10 @@ public class Weaviate {
             return null;
         }
         ArrayList<String> uris = new ArrayList<>();
+        ArrayList<LinkedTreeMap> results = (ArrayList<LinkedTreeMap>) ((LinkedTreeMap) ((LinkedTreeMap) result.getResult().getData()).get("Get")).get(collectionName);
+        if (results == null || results.isEmpty()){
+            return null;
+        }
         for (LinkedTreeMap resutl : (ArrayList<LinkedTreeMap>) ((LinkedTreeMap) ((LinkedTreeMap) result.getResult().getData()).get("Get")).get(collectionName)) {
             LinkedTreeMap additional = (LinkedTreeMap) resutl.get("_additional");
             if ((double) additional.get("certainty") >= threshold) {
