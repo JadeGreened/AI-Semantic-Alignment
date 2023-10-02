@@ -11,6 +11,7 @@ import org.apache.jena.rdf.model.StmtIterator;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Properties;
 import java.util.Set;
 
@@ -58,8 +59,25 @@ public class MyMatcher extends MatcherYAAAJena {
             }
         }
 
-        // TODO: resolve attack graph
+        Alignment toRemove = new Alignment();
 
+        // TODO: resolve attack graph
+        for (Correspondence var1 : alignment){
+            for (Correspondence var2: alignment){
+                if (var1.getEntityOne().equals(var2.getEntityOne())) {
+                    // TODO: ask GPT which to keep
+                }
+                if (var1.getEntityOne().equals(var2.getEntityTwo())) {
+
+                }
+                if (var1.getEntityTwo().equals(var2.getEntityOne())) {
+
+                }
+                if (var1.getEntityTwo().equals(var2.getEntityTwo())) {
+
+                }
+            }
+        }
 
         // clean database
         clean();

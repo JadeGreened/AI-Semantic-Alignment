@@ -27,10 +27,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 import de.uni_mannheim.informatik.dws.melt.yet_another_alignment_api.Alignment;
 import org.apache.jena.ontology.OntModel;
@@ -50,7 +47,7 @@ public class Main {
 
     private static void calculateStaticsManually() throws IOException, SAXException {
         File referenceFile = new File("simpleSealsMatcher/src/main/java/DataSet/reference.rdf");
-        List<List<String>> alignment = new ArrayList<>();
+        Alignment alignment = new Alignment();
         try (BufferedReader br = new BufferedReader(new FileReader("alignment.csv"))) {
             String line;
             while ((line = br.readLine()) != null) {
@@ -58,69 +55,78 @@ public class Main {
                     continue;
                 }
                 String[] values = line.split(",");
-                alignment.add(Arrays.asList(values));
+                alignment.add(new Correspondence(values[0].trim(), values[1].trim(), Double.parseDouble(values[2].trim())));
             }
         }
 
         Alignment reference = AlignmentParser.parse(referenceFile);
+        Alignment referenceCopy = new Alignment(reference);
+        Alignment alignmentCopy = new Alignment(alignment);
 
         Alignment tp = new Alignment();
         Alignment tn = new Alignment();
         Alignment fp = new Alignment();
         Alignment fn = new Alignment();
-        for (List<String> myVar : alignment){
-            String sourceUri = myVar.get(0).trim();
-            String targetUri = myVar.get(1).trim();
-            double confidence = Double.parseDouble(myVar.get(2).trim());
+        for (Correspondence myVar : alignment){
             for (Correspondence referenceVar : reference){
-                if (referenceVar.getEntityOne().trim().equals(sourceUri)
-                        && referenceVar.getEntityTwo().trim().equals(targetUri)){
-                    if (referenceVar.getConfidence() == confidence){
-                        tp.add(new Correspondence(sourceUri, targetUri, confidence));
-                    } else if (referenceVar.getConfidence() > 0.5){
-                        tn.add(new Correspondence(sourceUri, targetUri, confidence));
+                if (referenceVar.getEntityOne().trim().equals(myVar.getEntityOne().trim())
+                        && referenceVar.getEntityTwo().trim().equals(myVar.getEntityTwo().trim())) {
+                    if (referenceVar.getConfidence() > 0.5){
+                        if (myVar.getConfidence() > 0.5){
+                            tp.add(myVar);  // always true
+                        }
                     } else {
-                        fp.add(new Correspondence(sourceUri, targetUri, confidence));
+                        if (myVar.getConfidence() > 0.5){
+                            fp.add(myVar);  // always true
+                        }
                     }
-                    reference.remove(referenceVar);
+                    referenceCopy.remove(referenceVar);
+                    alignmentCopy.remove(myVar);
                     break;
                 }
-                if (referenceVar.getEntityOne().trim().equals(targetUri)
-                        && referenceVar.getEntityTwo().trim().equals(sourceUri)){
-                    if (referenceVar.getConfidence() == confidence){
-                        tp.add(new Correspondence(sourceUri, targetUri, confidence));
-                    } else if (referenceVar.getConfidence() > 0.5){
-                        tn.add(new Correspondence(sourceUri, targetUri, confidence));
+                if (referenceVar.getEntityOne().trim().equals(myVar.getEntityTwo().trim())
+                        && referenceVar.getEntityTwo().trim().equals(myVar.getEntityOne().trim())){
+                    if (referenceVar.getConfidence() > 0.5){
+                        if (myVar.getConfidence() > 0.5){
+                            tp.add(myVar);
+                        } else {
+                            fn.add(myVar);
+                        }
                     } else {
-                        fp.add(new Correspondence(sourceUri, targetUri, confidence));
+                        if (myVar.getConfidence() > 0.5){
+                            fp.add(myVar);
+                        } else {
+                            tn.add(myVar);
+                        }
                     }
-                    reference.remove(referenceVar);
+                    referenceCopy.remove(referenceVar);
+                    alignmentCopy.remove(myVar);
                     break;
                 }
             }
         }
 
-        System.out.println(reference.size());
-        // those in reference but not in alignment
-        for (Correspondence var : reference){
-            if (var.getConfidence() > 0.5){
-                tn.add(var);
-            } else {
-                fn.add(var);
+        // if reference says true, but not found
+        for (Correspondence var : referenceCopy){
+            if (var.getConfidence() > 0.5) {
+                fn.add(var);    // always true
             }
         }
+        // if we found, but reference says false
+        for (Correspondence var : alignmentCopy){
+            if (var.getConfidence() > 0.5) {
+                fp.add(var);    // always true
+            }
+        }
+
 
         System.out.println("tp: " + tp.size() + ", tn: " + tn.size() + ", fp: " + fp.size() + ", fn: " + fn.size());
-        // tp: 1010, tn: 506, fp: 0, fn: 0
 
-        print(alignment.size() - tp.size() - tn.size() + " ");
-        //338
+        System.out.print("precision: " + (double) tp.size() / (tp.size() + fp.size()) + ", ");
+        System.out.print("recall: " + (double) tp.size() / (tp.size() + fn.size()) + ", ");
 
-        int falseNegative = alignment.size() - tp.size() - tn.size();
+        System.out.println("f1: " + (double) 2 * tp.size() / (2 * tp.size() + fp.size() + fn.size()));
 
-        print("precision: " + (double) tp.size() / (tp.size() + fp.size()));    // 1.0
-        print("recall: " + (double) tp.size() / (tp.size() + falseNegative));   // 0.749258
-        print("f1 score: " + (double) 2 * tp.size() / (2 * tp.size() + fp.size() + falseNegative)); // 0.856658
 
     }
 
