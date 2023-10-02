@@ -35,14 +35,14 @@ import org.xml.sax.SAXException;
 
 public class Main {
     public static void main(String[] args) throws IOException, SAXException {
-//        initDatabase();
-//        runMatcherWithLocalData();
+        initDatabase();
+        runMatcherWithLocalData();
 
 //        testOntClassNullURL();
 //        testOntModelProperties();
 //        testMatcherOnline();
 //        testOboInOwl();
-        calculateStaticsManually();
+//        calculateStaticsManually();
     }
 
     private static void calculateStaticsManually() throws IOException, SAXException {
@@ -89,14 +89,14 @@ public class Main {
                     if (referenceVar.getConfidence() > 0.5){
                         if (myVar.getConfidence() > 0.5){
                             tp.add(myVar);
-                        } else {
-                            fn.add(myVar);
+//                        } else {
+//                            fn.add(myVar);
                         }
                     } else {
                         if (myVar.getConfidence() > 0.5){
                             fp.add(myVar);
-                        } else {
-                            tn.add(myVar);
+//                        } else {
+//                            tn.add(myVar);
                         }
                     }
                     referenceCopy.remove(referenceVar);
@@ -153,7 +153,7 @@ public class Main {
         // let's execute our matcher on the OAEI Anatomy test case
         ExecutionResultSet ers = Executor.run(
                 new TestCase("localtest", sourceFile.toURI(), targetFile.toURI(), referenceFile.toURI(),
-                        new Track("", "", "", false) {
+                        new Track(null, null, null, false) {
                             @Override
                             protected void downloadToCache() throws Exception {
                                 return;
