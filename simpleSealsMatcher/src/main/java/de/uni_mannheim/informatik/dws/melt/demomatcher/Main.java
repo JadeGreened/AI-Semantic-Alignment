@@ -43,6 +43,11 @@ public class Main {
 //        testMatcherOnline();
 //        testOboInOwl();
 //        calculateStaticsManually();
+//        embedding();
+    }
+
+    private static void embedding() {
+
     }
 
     private static void calculateStaticsManually() throws IOException, SAXException {
@@ -58,11 +63,41 @@ public class Main {
                 alignment.add(new Correspondence(values[0].trim(), values[1].trim(), Double.parseDouble(values[2].trim())));
             }
         }
-
         Alignment reference = AlignmentParser.parse(referenceFile);
+
+        calculateStatics(alignment, reference);
+
+        File referenceFile1 = new File("simpleSealsMatcher/src/main/java/DataSet/reference.rdf");
+        Alignment alignment1 = new Alignment();
+        try (BufferedReader br = new BufferedReader(new FileReader("alignment.csv"))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                if (line.startsWith("s")){
+                    continue;
+                }
+                String[] values = line.split(",");
+                alignment1.add(new Correspondence(values[0].trim(), values[1].trim(), Double.parseDouble(values[2].trim())));
+            }
+        }
+        Alignment reference1 = AlignmentParser.parse(referenceFile1);
+
+        OntModel source = ModelFactory.createOntologyModel(OntModelSpec.OWL_DL_MEM);
+        source.read("simpleSealsMatcher/src/main/java/DataSet/human.owl");
+        OntModel target = ModelFactory.createOntologyModel(OntModelSpec.OWL_DL_MEM);
+        source.read("simpleSealsMatcher/src/main/java/DataSet/mouse.owl");
+        MyMatcher matcher = new MyMatcher();
+        matcher.setup(source, target, false);
+        Alignment toRemove = matcher.removeAttack(alignment1, source, target);
+        alignment1.removeAll(toRemove);
+
+        print("===========================================");
+        calculateStatics(alignment1, reference1);
+
+    }
+
+    private static void calculateStatics(Alignment alignment, Alignment reference) {
         Alignment referenceCopy = new Alignment(reference);
         Alignment alignmentCopy = new Alignment(alignment);
-
         Alignment tp = new Alignment();
         Alignment tn = new Alignment();
         Alignment fp = new Alignment();
@@ -126,8 +161,6 @@ public class Main {
         System.out.print("recall: " + (double) tp.size() / (tp.size() + fn.size()) + ", ");
 
         System.out.println("f1: " + (double) 2 * tp.size() / (2 * tp.size() + fp.size() + fn.size()));
-
-
     }
 
     private static void testOboInOwl() {
@@ -142,8 +175,8 @@ public class Main {
 
 
     private static void initDatabase() throws IOException {
-        uploadEmbeddingsFromFileToWeaviate("source.json", "Source");
-        uploadEmbeddingsFromFileToWeaviate("target.json", "Target");
+        uploadEmbeddingsFromFileToWeaviate("embeddings/anatomy/source.json", "Source");
+        uploadEmbeddingsFromFileToWeaviate("embeddings/anatomy/target.json", "Target");
     }
 
     private static void runMatcherWithLocalData(){

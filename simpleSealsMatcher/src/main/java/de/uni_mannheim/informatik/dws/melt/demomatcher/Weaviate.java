@@ -149,18 +149,27 @@ public class Weaviate {
         WhereFilter where = WhereFilter.builder()
                 .path(new String[]{ "isNegotiated" })
                 .operator(Operator.Equal)
-                .valueBoolean(all)
+                .valueBoolean(false)
                 .build();
         NearVectorArgument nearVector = NearVectorArgument.builder()
                 .vector(embeddingFloat)
                 .build();
 
-        Result<GraphQLResponse> result = client.graphQL().get()
-                .withClassName(collectionName)
-                .withFields(uri, _additional)
-                .withNearVector(nearVector)
-                .withWhere(where)
-                .run();
+        Result<GraphQLResponse> result = null;
+        if (all){
+            result = client.graphQL().get()
+                    .withClassName(collectionName)
+                    .withFields(uri, _additional)
+                    .withNearVector(nearVector)
+                    .run();
+        } else {
+            result = client.graphQL().get()
+                    .withClassName(collectionName)
+                    .withFields(uri, _additional)
+                    .withNearVector(nearVector)
+                    .withWhere(where)
+                    .run();
+        }
 
         if (result.hasErrors()) {
             System.out.println(result.getError());

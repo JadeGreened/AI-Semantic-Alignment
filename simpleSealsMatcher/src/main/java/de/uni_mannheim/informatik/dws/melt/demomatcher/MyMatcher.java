@@ -59,25 +59,9 @@ public class MyMatcher extends MatcherYAAAJena {
             }
         }
 
-        Alignment toRemove = new Alignment();
-
         // TODO: resolve attack graph
-        for (Correspondence var1 : alignment){
-            for (Correspondence var2: alignment){
-                if (var1.getEntityOne().equals(var2.getEntityOne())) {
-                    // TODO: ask GPT which to keep
-                }
-                if (var1.getEntityOne().equals(var2.getEntityTwo())) {
-
-                }
-                if (var1.getEntityTwo().equals(var2.getEntityOne())) {
-
-                }
-                if (var1.getEntityTwo().equals(var2.getEntityTwo())) {
-
-                }
-            }
-        }
+//        Alignment toRemove = removeAttack(alignment, source, target);
+//        alignment.removeAll(toRemove);
 
         // clean database
         clean();
@@ -85,12 +69,63 @@ public class MyMatcher extends MatcherYAAAJena {
         return alignment;
     }
 
+    public Alignment removeAttack(Alignment alignment, OntModel source, OntModel target){
+        Alignment toRemove = new Alignment();
+        int count = 0;
+        for (Correspondence var1 : alignment){
+            for (Correspondence var2: alignment){
+                if (var1.equals(var2)){
+                    continue;
+                }
+                boolean flag = false;
+                if (var1.getEntityOne().equals(var2.getEntityOne())) {
+                    flag = true;
+                }
+                if (var1.getEntityOne().equals(var2.getEntityTwo())) {
+                    flag = true;
+                }
+                if (var1.getEntityTwo().equals(var2.getEntityOne())) {
+                    flag = true;
+                }
+                if (var1.getEntityTwo().equals(var2.getEntityTwo())) {
+                    flag = true;
+                }
+                if (flag){
+                    // TODO: ask GPT which to keep
+                    OntClass source1 = null;
+                    OntClass target1 = null;
+                    OntClass source2 = null;
+                    OntClass target2 = null;
+                    try {
+                        source1 = source.getOntClass(var1.getEntityOne());
+                        target1 = target.getOntClass(var1.getEntityTwo());
+                    } catch (Exception e){
+                        source1 = target.getOntClass(var1.getEntityOne());
+                        target1 = source.getOntClass(var1.getEntityTwo());
+                    }
+                    try {
+                        source2 = source.getOntClass(var2.getEntityOne());
+                        target2 = target.getOntClass(var2.getEntityTwo());
+                    } catch (Exception e){
+                        source2 = target.getOntClass(var2.getEntityOne());
+                        target2 = source.getOntClass(var2.getEntityTwo());
+                    }
+                    Correspondence var  = sourceAgent.resolveAttack(source1, target1, source2, target2);
+                    toRemove.add(var);
+                    count++;
+                }
+            }
+        }
+        print("Remove attack count: " + count);
+        return toRemove;
+    }
+
     /***
      * setup agents, embeddings, database, and openAI
      * @param source source ontology
      * @param target target ontology
      */
-    private void setup(OntModel source, OntModel target, boolean isOnline){
+    public void setup(OntModel source, OntModel target, boolean isOnline){
         this.targetAgent = new OntologyAgent(target, "Target", isOnline);
         this.sourceAgent = new OntologyAgent(source, "Source", isOnline);
     }

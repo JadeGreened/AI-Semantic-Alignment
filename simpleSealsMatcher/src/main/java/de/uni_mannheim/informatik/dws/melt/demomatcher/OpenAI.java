@@ -123,6 +123,36 @@ public class OpenAI {
         return -1;
     }
 
+    public int resolveAttack(String source1, String target1, String source2, String target2){
+        String prompt = "<Problem Definition>\n" +
+                "In this task, we are giving two correspondences of entity. There is one entity " +
+                "shared by both correspondences. The correspondences are represented in the form of " +
+                "Relation(Correspondence1, Correspondence2), which consists of URIs and labels " +
+                "of entities of the correspondences.\n \n" +
+                "<Correspondence 1>  \n" +
+                "%s \n" +   // source1
+                "%s \n \n" +    // target1
+                "<Correspondence 2>  \n" +
+                "%s" +  // source2
+                "%s" +  // target2
+                "To remove situation where one entity shared by both correspondences, one correspondence " +
+                "should be removed. Which one do you think should be removed? Please only answer with the index of " +
+                "entity (just the index, for example \"1\", \"2\"). No explain needed.";
+        String input = String.format(prompt, source1, target1, source2, target2);
+        String thought = think(input);
+        try {
+            int result = Integer.parseInt(thought);
+            if (result == 1 || result == 2){
+                return result;
+            }
+        } catch (NumberFormatException e){
+            System.out.println("Azure: The result is not a number. Thought is: " + thought);
+            return 0;
+        }
+
+        return 0;
+    }
+
     private String getWhichIsBetterPrompt(String source, String[] targets, int expertBeliefIndex, String[] relevantEntities){
         String prompt = "<Problem Definition>\n" +
                 "In this task, we are giving a) one subject entity, " +

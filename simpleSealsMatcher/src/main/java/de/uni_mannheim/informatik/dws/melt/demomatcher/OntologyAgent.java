@@ -1,6 +1,7 @@
 package de.uni_mannheim.informatik.dws.melt.demomatcher;
 
 import com.alibaba.fastjson.JSONObject;
+import de.uni_mannheim.informatik.dws.melt.yet_another_alignment_api.Correspondence;
 import org.apache.jena.ontology.OntClass;
 import org.apache.jena.ontology.OntModel;
 import org.apache.jena.rdf.model.Statement;
@@ -34,7 +35,7 @@ public class OntologyAgent {
         return collectionName;
     }
 
-    private void embeddingComponents(OntModel ontology){
+    public void embeddingComponents(OntModel ontology){
         // TODO: rewrite this function with Weaviate
         List<JSONObject> rows = new ArrayList<>();
         int i = 0;
@@ -55,7 +56,7 @@ public class OntologyAgent {
             json_row.put("isNegotiated", false);
 
             rows.add(json_row);
-            System.out.println(++i);
+            System.out.println(++i + ": " + info);
         }
 
         // write rows into local file
@@ -103,7 +104,7 @@ public class OntologyAgent {
      * @return the set of all entities that are relevant to the given entity. null if no relevant entities.
      */
     public Set<PotentialCorrespondence> proposeCorrespondence(OntClass entity, ArrayList<Double> embedding) {
-        Set<OntClass> relevantEntities = findAllRelevantNotNegotiatedEntities(embedding, false);
+        Set<OntClass> relevantEntities = findAllRelevantNotNegotiatedEntities(embedding, true);
         if (relevantEntities == null){
             return null;
         }
@@ -126,6 +127,25 @@ public class OntologyAgent {
 
 //        checkAllPotentialCorrespondencesWithSelfEntities(potentialCorrespondences);
         // TODO: register the correspondences to the Joint Knowledge Base
+        return null;
+    }
+
+    /***
+     *
+     * @param source1
+     * @param target1
+     * @param source2
+     * @param target2
+     * @return the correspondence to remove. null if no need to remove.
+     */
+    public Correspondence resolveAttack(OntClass source1, OntClass target1, OntClass source2, OntClass target2){
+        int result = ai.resolveAttack(toString(source1), toString(target1), toString(source2), toString(target2));
+        switch (result) {
+            case 1:
+                return new Correspondence(source1.getURI(), target1.getURI(), 1.0);
+            case 2:
+                return new Correspondence(source2.getURI(), target2.getURI(), 1.0);
+        }
         return null;
     }
 
