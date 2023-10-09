@@ -4,6 +4,8 @@ This reposotory stores an implementation of the LLMA Dialogue Model for experime
 
 The implementation is a Java project using Maven and [MELT](https://dwslab.github.io/melt/).
 
+This project uses GPT through [Azure OpenAI](https://azure.microsoft.com/en-gb/products/ai-services/openai-service/). You will need to update model information in OpenAI.java file. The recommended model is gpt-4-32k.
+
 ## Structure
 Implementation is stored in simpleSealsMatcher folder. A copy of the used OAEI dataset [Anatomy](http://oaei.ontologymatching.org/2023/anatomy/index.html) is stored in the .*/java/DataSet/ folder.
 

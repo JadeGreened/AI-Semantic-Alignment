@@ -17,9 +17,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class OpenAI {
-    private static final String azureOpenaiKey = "3d172d13e1984f8ca5759838ea318a13";
-    private static final String endpoint = "https://research-gpt-openai-canada-east.openai.azure.com/";
-
+    private static final String azureOpenaiKey = "";
+    private static final String endpoint = "";
+    private static final String DEPLOYMENT_OR_MODEL_NAME = "gpt-4-32k";
     private static final OpenAIClient client = new OpenAIClientBuilder()
             .endpoint(endpoint)
             .credential(new AzureKeyCredential(azureOpenaiKey))
@@ -179,7 +179,7 @@ public class OpenAI {
         boolean flag = false;
         while(!flag){
             try{
-                chatCompletions = client.getChatCompletions("gpt-4-32k", new ChatCompletionsOptions(chatMessages));
+                chatCompletions = client.getChatCompletions(DEPLOYMENT_OR_MODEL_NAME, new ChatCompletionsOptions(chatMessages));
                 flag = true;
             } catch (HttpResponseException e){
 //                System.out.println(e.getMessage());
