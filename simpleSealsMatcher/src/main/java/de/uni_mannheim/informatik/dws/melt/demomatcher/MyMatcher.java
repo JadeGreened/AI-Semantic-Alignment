@@ -5,13 +5,8 @@ import de.uni_mannheim.informatik.dws.melt.yet_another_alignment_api.Alignment;
 import de.uni_mannheim.informatik.dws.melt.yet_another_alignment_api.Correspondence;
 import org.apache.jena.ontology.OntClass;
 import org.apache.jena.ontology.OntModel;
-import org.apache.jena.rdf.model.Statement;
-import org.apache.jena.rdf.model.StmtIterator;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.Properties;
 import java.util.Set;
 
@@ -20,10 +15,6 @@ public class MyMatcher extends MatcherYAAAJena {
     private OntologyAgent targetAgent;
     @Override
     public Alignment match(OntModel source, OntModel target, Alignment inputAlignment, Properties properties) throws Exception {
-        return matchLogic(source, target, false);
-    }
-
-    public Alignment matchLocally(OntModel source, OntModel target){
         return matchLogic(source, target, false);
     }
 
@@ -190,75 +181,6 @@ public class MyMatcher extends MatcherYAAAJena {
     private void clean(){
         this.sourceAgent.clean();
         this.targetAgent.clean();
-    }
-
-    private String getURI(String data){
-        // 找到 "Class  URI: " 和 "Label: " 的位置
-        int startIndex = data.indexOf("Class  URI: ") + "Class  URI: ".length();
-        int endIndex = data.indexOf("Label: ");
-
-        // 使用 substring 提取 URI
-        String classUri = data.substring(startIndex, endIndex).trim();
-
-        // 将字符串转为 URI
-        return classUri;
-    }
-
-    /*
-    这里是用的jena的api接口来处理的owl文件，这样操作比较方便，而且能直接拿到class的URI（Uniform Resource Identifier）。并且也能找到一个ontology的全部属性和信息，
-    如果你觉得不好的话可以改。
-     */
-    private ArrayList<String> toArrayList(OntModel ontology) {
-        print("Start transfer ontology to ArrayList");
-
-        ArrayList<String> list = new ArrayList<>();
-        for (OntClass ontClass : ontology.listClasses().toList()) {
-            //如果是一个匿名类，这里要拿来用的话是非常困难的，一般对齐当中也不会考虑匿名类
-            //当然匿名类里面也会有很多的信息，可以拿来使用。这个就要看后续的算法优化了
-            if (ontClass.isAnon()) {
-                // currently just ignored, so comment out
-////                System.out.println("This is a anonymous class--------------------------------");
-////                System.out.println("Uri : " + ontClass.asClass().getURI());
-//                for (Iterator<OntClass> i = ontClass.listSubClasses(); i.hasNext(); ) {
-//                    OntClass subClass = i.next();
-////                    System.out.println("anon subclass: " + subClass.getURI());
-//                    //子类
-//                }
-//                for (Iterator<OntClass> i = ontClass.listSuperClasses(); i.hasNext(); ) {
-//                    OntClass superClass = i.next();
-////                    System.out.println("anon superclass: " + superClass.getURI());
-//                    //超类
-//                }
-//                for (StmtIterator i = ontClass.listProperties(); i.hasNext(); ) {
-//                    Statement stmt = i.next();
-////                    System.out.println("Property: " + stmt.getPredicate().getLocalName());
-////                    System.out.println("Value: " + stmt.getObject().toString());
-//                    //属性
-//                }
-            } else {
-                //如果是一个具名类
-//                System.out.println("-----------------------------------------");
-                String info = "";
-                String uri = ontClass.getURI();
-//                System.out.println("Class  URI: " + uri);
-                info += "Class  URI: " + uri + "\n";
-
-                // 获取并打印类的标签
-                String label = ontClass.getLabel(null);
-//                System.out.println("Label: " + label);
-                info += "Label: " + label + "\n";
-                //所有的属性
-                for (StmtIterator i = ontClass.listProperties(); i.hasNext(); ) {
-                    Statement stmt = i.next();
-//                    System.out.println("Property: " + stmt.getPredicate().getLocalName());
-//                    System.out.println("Value: " + stmt.getObject().toString());
-                    info += "Property: " + stmt.getPredicate().getLocalName() + "\n";
-                    info += "Value: " + stmt.getObject().toString() + "\n";
-                }
-                list.add(info);
-            }
-        }
-        return list;
     }
 
     private static void print(String s){

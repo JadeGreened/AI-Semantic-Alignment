@@ -1,6 +1,5 @@
 package de.uni_mannheim.informatik.dws.melt.demomatcher;
 
-import com.alibaba.fastjson.JSONArray;
 import com.azure.ai.openai.OpenAIClient;
 import com.azure.ai.openai.OpenAIClientBuilder;
 import com.azure.ai.openai.models.ChatCompletions;
@@ -12,7 +11,6 @@ import com.azure.ai.openai.models.Embeddings;
 import com.azure.ai.openai.models.EmbeddingsOptions;
 import com.azure.core.exception.HttpResponseException;
 
-import java.math.BigDecimal;
 import java.util.Arrays;
 
 import java.util.ArrayList;
@@ -81,30 +79,6 @@ public class OpenAI {
             return true;
         }
         return false;
-    }
-
-    /***
-     * Compare between targets, decide which one is a better choice aligning to the source
-     * @param source the source component
-     * @param targets the target components
-     * @param expertBeliefIndex the index of the target that the expert believes is the best choice. The index
-     *                          must be in the range of [1, targets.length]. 0 if ignore the expert belief.
-     * @return the index of the best target. The index must be in the range of [0, targets.length - 1]. -1 if something goes wrong.
-     */
-    public int whichComponentIsBetter(String source, String[] targets, int expertBeliefIndex){
-        String thought = think(getWhichIsBetterPrompt(source, targets, expertBeliefIndex, null));
-
-        // format the result into an integer
-        try{
-            int result = Integer.parseInt(thought);
-            if (result > 0 && result <= targets.length){
-                return result - 1;
-            }
-        } catch (NumberFormatException e){
-            System.out.println("Azure: The result is not a number. Thought is: " + thought);
-            return -1;
-        }
-        return -1;
     }
 
     public int whichComponentIsBetter(String source, String[] targets, int expertBeliefIndex, String[] relevantEntities){

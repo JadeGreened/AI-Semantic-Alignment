@@ -3,7 +3,6 @@ package de.uni_mannheim.informatik.dws.melt.demomatcher;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.JSONReader;
-import com.google.gson.GsonBuilder;
 import de.uni_mannheim.informatik.dws.melt.matching_data.TestCase;
 import de.uni_mannheim.informatik.dws.melt.matching_data.Track;
 import de.uni_mannheim.informatik.dws.melt.matching_data.TrackRepository;
@@ -12,13 +11,6 @@ import de.uni_mannheim.informatik.dws.melt.matching_eval.Executor;
 import de.uni_mannheim.informatik.dws.melt.matching_eval.evaluator.EvaluatorCSV;
 import de.uni_mannheim.informatik.dws.melt.yet_another_alignment_api.AlignmentParser;
 import de.uni_mannheim.informatik.dws.melt.yet_another_alignment_api.Correspondence;
-import io.weaviate.client.base.Result;
-import io.weaviate.client.v1.data.model.WeaviateObject;
-import io.weaviate.client.v1.filters.Operator;
-import io.weaviate.client.v1.filters.WhereFilter;
-import io.weaviate.client.v1.graphql.model.GraphQLResponse;
-import io.weaviate.client.v1.graphql.query.fields.Field;
-import io.weaviate.client.v1.schema.model.WeaviateClass;
 import org.apache.jena.ontology.*;
 import org.apache.jena.rdf.model.ModelFactory;
 
@@ -38,16 +30,8 @@ public class Main {
         initDatabase();
         runMatcherWithLocalData();
 
-//        testOntClassNullURL();
-//        testOntModelProperties();
 //        testMatcherOnline();
-//        testOboInOwl();
 //        calculateStaticsManually();
-//        embedding();
-    }
-
-    private static void embedding() {
-
     }
 
     private static void calculateStaticsManually() throws IOException, SAXException {
@@ -163,17 +147,6 @@ public class Main {
         System.out.println("f1: " + (double) 2 * tp.size() / (2 * tp.size() + fp.size() + fn.size()));
     }
 
-    private static void testOboInOwl() {
-        OntModel source = ModelFactory.createOntologyModel(OntModelSpec.OWL_DL_MEM);
-        source.read("simpleSealsMatcher/src/main/java/DataSet/human.owl");
-//        for (OntClass var : source.listClasses().toList()){
-//            print(var.getURI());
-//        }
-        OntClass var = source.getOntClass("http://human.owl#NCI_C12499");
-        print(OntologyAgent.toStringForGPT(var, true));
-    }
-
-
     private static void initDatabase() throws IOException {
         uploadEmbeddingsFromFileToWeaviate("embeddings/anatomy/source.json", "Source");
         uploadEmbeddingsFromFileToWeaviate("embeddings/anatomy/target.json", "Target");
@@ -197,47 +170,6 @@ public class Main {
         // does not exist).
         EvaluatorCSV evaluatorCSV = new EvaluatorCSV(ers);
         evaluatorCSV.writeToDirectory();
-    }
-
-    private static void testOntClassNullURL() {
-        OntModel source = ModelFactory.createOntologyModel(OntModelSpec.OWL_DL_MEM);
-        source.read("simpleSealsMatcher/src/main/java/DataSet/human.owl");
-
-        for (OntClass var : source.listClasses().toList()) {
-            if (var.getURI() == null){
-                print("var==================");
-                print(var.getLabel(null));
-                print(var.getURI());
-                print(var.getLocalName());
-                print(var.getComment(null));
-                print(var.getNameSpace());
-                print(var.getVersionInfo());
-                if (var.getEquivalentClass() != null){
-                    print("equivalent class ================");
-                    print(var.getEquivalentClass().getURI());
-                    print(var.getEquivalentClass().getLocalName());
-                    print(var.getEquivalentClass().getLabel(null));
-                    print(var.getEquivalentClass().getComment(null));
-                }
-                if(var.getSubClass() != null){
-                    print("subclass========================");
-                    print(var.getSubClass().getURI());
-                    print(var.getSubClass().getLocalName());
-                    print(var.getSubClass().getLabel(null));
-                    print(var.getSubClass().getComment(null));
-                }
-                if(var.getSuperClass() != null){
-                    print("superclass========================");
-                    print(var.getSuperClass().getURI());
-                    print(var.getSuperClass().getLocalName());
-                    print(var.getSuperClass().getLabel(null));
-                    print(var.getSuperClass().getComment(null));
-                }
-
-                print(var.getSameAs() == null ? "null" : var.getSameAs().toString());
-                print(var.getDisjointWith() == null ? "null" : var.getDisjointWith().toString());
-            }
-        }
     }
 
     private static void uploadEmbeddingsFromFileToWeaviate(String fileName, String collectionName) throws IOException {
@@ -286,44 +218,6 @@ public class Main {
         // does not exist).
         EvaluatorCSV evaluatorCSV = new EvaluatorCSV(ers);
         evaluatorCSV.writeToDirectory();
-    }
-
-    private static void testOntModelProperties(){
-        OntModel source = ModelFactory.createOntologyModel(OntModelSpec.OWL_DL_MEM);
-        source.read("simpleSealsMatcher/src/main/java/DataSet/human.owl");
-
-        OntClass var = source.listClasses().next();
-        print("var==================");
-        print(var.getLabel(null));
-        print(var.getURI());
-        print(var.getLocalName());
-        print(var.getComment(null));
-        print(var.getNameSpace());
-        print(var.getVersionInfo());
-        if (var.getEquivalentClass() != null){
-            print("equivalent class ================");
-            print(var.getEquivalentClass().getURI());
-            print(var.getEquivalentClass().getLocalName());
-            print(var.getEquivalentClass().getLabel(null));
-            print(var.getEquivalentClass().getComment(null));
-        }
-        if(var.getSubClass() != null){
-            print("subclass========================");
-            print(var.getSubClass().getURI());
-            print(var.getSubClass().getLocalName());
-            print(var.getSubClass().getLabel(null));
-            print(var.getSubClass().getComment(null));
-        }
-        if(var.getSuperClass() != null){
-            print("superclass========================");
-            print(var.getSuperClass().getURI());
-            print(var.getSuperClass().getLocalName());
-            print(var.getSuperClass().getLabel(null));
-            print(var.getSuperClass().getComment(null));
-        }
-
-        print(var.getSameAs() == null ? "null" : var.getSameAs().toString());
-        print(var.getDisjointWith() == null ? "null" : var.getDisjointWith().toString());
     }
 
     private static void print(String s){

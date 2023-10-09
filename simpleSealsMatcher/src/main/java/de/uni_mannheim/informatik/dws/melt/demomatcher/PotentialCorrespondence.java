@@ -30,20 +30,6 @@ public class PotentialCorrespondence {
         return relation;
     }
 
-    public boolean isExamined() {
-        return isExamined;
-    }
-
-    /***
-     * This should only be called by the target agent.
-     */
-    public void setExamined() {
-        isExamined = true;
-    }
-
-    public OntologyAgent getGenerator() {
-        return generator;
-    }
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

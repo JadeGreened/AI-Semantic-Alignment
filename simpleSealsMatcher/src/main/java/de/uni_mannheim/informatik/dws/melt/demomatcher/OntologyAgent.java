@@ -18,7 +18,6 @@ public class OntologyAgent {
     private OntModel ontology;
     private Weaviate db;
     private OpenAI ai;
-    private Object JointKnowledgeBase;  // TODO: define later
     private boolean isFinished = false;
     private String collectionName;
     private static final double SIMILARITY_THRESHOLD = 0.95;
@@ -113,21 +112,6 @@ public class OntologyAgent {
         Set<PotentialCorrespondence> potentialCorrespondences = examineRelevantEntities(entity, relevantEntities);
         //TODO: register the correspondences to the Joint Knowledge Base
         return potentialCorrespondences;
-    }
-
-    /***
-     * Receive the correspondences with relevant entities from the other agent, and find all entities that are relevant to the given entity
-     * @param theEntity the source entity of the negotiation
-     * @param potentialCorrespondences the set of all correspondences with relevant entities. The source entity is the original one to align.
-     * @return the selected correspondence. will NOT be null.
-     */
-    public PotentialCorrespondence checkProposal(OntClass theEntity, Set<PotentialCorrespondence> potentialCorrespondences, PotentialCorrespondence betterCorrespondence, OntologyAgent otherAgent){
-        // TODO: register received entity to the Joint Knowledge Base
-
-
-//        checkAllPotentialCorrespondencesWithSelfEntities(potentialCorrespondences);
-        // TODO: register the correspondences to the Joint Knowledge Base
-        return null;
     }
 
     /***
