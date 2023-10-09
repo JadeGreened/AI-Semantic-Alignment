@@ -2,7 +2,7 @@
 
 This reposotory stores an implementation of the LLMA Dialogue Model for experiment purpose. The paper of LLMA Dialogue Model can be found here.
 
-The implementation is a Java project using Maven and [MELT](https://dwslab.github.io/melt/)
+The implementation is a Java project using Maven and [MELT](https://dwslab.github.io/melt/).
 
 ## Structure
 Implementation is stored in simpleSealsMatcher folder. A copy of the used OAEI dataset [Anatomy](http://oaei.ontologymatching.org/2023/anatomy/index.html) is stored in the .*/java/DataSet/ folder.
@@ -16,4 +16,4 @@ The project entrance is in Main class, and other class work as following:
 * MyMatcher is the matcher implemented using MELT. It's used as the entrance of the model.
 * OntologyAgent is the agent class negotiating in the model. It contains functions agents need to negotiate and get correspondence.
 * OpenAI is responsible for all API calls and prompt assembly that agents would need.
-* Weaviate is the vector database used by agent.
+* Weaviate is the vector database used by agent. For Weaviate instruction, see [here](./simpleSealsMatcher/Weaviate/readme.md)
