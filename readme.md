@@ -17,3 +17,6 @@ The project entrance is in Main class, and other class work as following:
 * OntologyAgent is the agent class negotiating in the model. It contains functions agents need to negotiate and get correspondence.
 * OpenAI is responsible for all API calls and prompt assembly that agents would need.
 * Weaviate is the vector database used by agent. For Weaviate instruction, see [here](./simpleSealsMatcher/Weaviate/readme.md)
+
+## License
+[MIT](LICENSE)
