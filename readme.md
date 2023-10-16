@@ -20,5 +20,8 @@ The project entrance is in Main class, and other class work as following:
 * OpenAI is responsible for all API calls and prompt assembly that agents would need.
 * Weaviate is the vector database used by agent. For Weaviate instruction, see [here](./simpleSealsMatcher/Weaviate/readme.md)
 
+## Paper implementation
+The implementation LLMA paper used is the [v0.1.0](https://github.com/JadeGreened/AI-Semantic-Alignment/releases/tag/v0.1.0)
+
 ## License
 [MIT](LICENSE)
