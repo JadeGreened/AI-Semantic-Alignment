@@ -40,6 +40,29 @@ json_row.put("isNegotiated", false);
 ```
 
 ### Query to GPT
+The prompt template of selecting the most likely entity for alignment:
+```
+<Problem Definition>
+In this task, we are giving a) one subject entity, and b) a set of entities for potential alignment in the form of Relation(Subject, EntitiesOfOtherAgent), which consist of URIs and labels.
+
+<Subject Entity>
+
+<Entities Of Other Agent>
+
+Among all entities of other ontology, select all entities that you think having a possibility aligning with the subject entity? Please only answer with the index of entity (just the index, for example "1, 2, 4"). Answer "no" if you think none of them aligns with the subject entity.
+```
+
+The prompt template of deciding if two entities are potentially aligned:
+```
+<Problem Definition>
+In this task, we are given two entities in the form of Relation(Subject, Object), which consist of URIs and labels.
+
+<Entity Triples>
+[Entity 1:Entity2]
+Do you think these two entities are aligned? If so, please output:yes, otherwise, please output:no(just "yes" or "no", small character no other symbols required)
+```
+
+The information of entity:
 ```
 URI: <getURI()>
 Label: <getLabel(null)>
