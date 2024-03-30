@@ -23,5 +23,49 @@ The project entrance is in Main class, and other class work as following:
 ## Paper implementation
 The implementation LLMA paper used is the [v0.1.0](https://github.com/JadeGreened/AI-Semantic-Alignment/releases/tag/v0.1.0)
 
+### Embedding information
+
+```JAVA
+info += ontClass.getLocalName() +"\n";
+info += ontClass.getLabel(null) +"\n";
+info += ontClass.getComment(null);
+```
+
+### Data stored in vector database
+
+```JAVA
+json_row.put("vector", ai.getEmbeddings(info));
+json_row.put("uri", ontClass.getURI());
+json_row.put("isNegotiated", false);
+```
+
+### Query to GPT
+```
+URI: <getURI()>
+Label: <getLabel(null)>
+Local name: <getLocalName>
+Comment: <getComment>
+
+<if(listProperty startsWith(http) and not null), then below>
+Property: <getPredicate().getLocalName()>
+Value: <getObject().toString()>
+
+... More listProperties...
+
+
+<sub-info if exists, then below>
+================ Relevant entity of this ontology ================
+Label: <getLabel(null)>
+URI: <getURI()>
+Local name: <getLocalName()>
+Comment: <getComment(null)>
+<if(listProperty startsWith(http) and not null), then below>
+Property: <getPredicate().getLocalName()>
+Value: <getObject().toString()>
+
+... More listProperties...
+```
+
+
 ## License
 [MIT](LICENSE)
